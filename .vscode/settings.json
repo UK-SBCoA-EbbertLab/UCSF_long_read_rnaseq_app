@@ -32,4 +32,7 @@
 
     // Enable parameter hints
     "editor.parameterHints.enabled": true,
+
+    // Make virtual environment python the deault
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
 }
