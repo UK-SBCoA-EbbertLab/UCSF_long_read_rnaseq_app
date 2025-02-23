@@ -18,6 +18,8 @@ __pycache__/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+*.code-workspace
+cursor.config.json
 
 # PyCharm
 .idea/
