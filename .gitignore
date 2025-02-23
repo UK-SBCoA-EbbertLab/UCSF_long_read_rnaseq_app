@@ -80,5 +80,11 @@ env.bak/
 venv.bak/
 
 # Data and Figures
-raw_data/
+data/
 figures/
+sql_database/
+*.db
+*.csv
+*.tsv
+*.gtf
+*.raw
