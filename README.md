@@ -1,84 +1,89 @@
-# Dash Web App Project
+# My Dash App for Alzheimer's Disease Data Visualization
 
 ## Overview
-This project is a web application built using Dash, a Python framework for building analytical web applications. It's designed to [brief description of what your app does - e.g., "visualize data from X source" or "provide interactive analysis of Y"].
+This repository hosts a Python Dash web application designed to visualize, download, and explore various datasets related to Alzheimer's disease research. The app provides interactive views for gene and RNA isoform expression data (long read RNAseq), genotyping data, technical sequencing/genotyping variables, demographics, and pathology data from post-mortem brain tissue. Its modular design—with multiple tabs for different types of data—ensures scalability and ease of maintenance.
 
-## Project Structure
-```
-AD_RNAseq_dash_app/
-│
-├── .vscode/              # VS Code specific settings
-│   └── launch.json       # Starts virtual environment for VScode workspace
-├── app.py                # Main application file
-├── data/
-│   ├── toptable_2023     # Directory containing toptable data files
-│   └── annotations.csv   # Gene annotations file
-├── assets/
-│   ├── favicon.ico
-│   └── style.css         # Custom styles for the app
-├── .gitignore
-├── README.md             # This file
-├── run.py                # Script to run the application
-├── requirements.txt      # Project dependencies
-└── Dockerfile            # Docker configuration for deployment
-```
+## Folder Structure
 
-## Setup and Installation
+    my_dash_app/
+    ├── app/                    
+    │   ├── __init__.py         # Initializes the Dash app and sets up the Flask server.
+    │   ├── app.py              # The main entry point for launching the application.
+    │   ├── layout.py           # Defines the overall layout (header, footer, etc.) of the app.
+    │   ├── callbacks.py        # Contains global callback functions for app interactivity.
+    │   └── tabs/               # Contains individual modules for each tab in the app.
+    │       ├── tab1.py         # Tab 1: Gene Expression Visualization.
+    │       ├── tab2.py         # Tab 2: RNA Isoform Exploration.
+    │       ├── tab3.py         # Tab 3: Genotyping Data.
+    │       └── ...             # Additional tabs as needed.
+    ├── assets/                 # Static assets that Dash automatically serves.
+    │   ├── custom.css          # Custom CSS for styling the app.
+    │   ├── custom.js           # Optional JavaScript for additional interactivity.
+    │   └── images/             # Images, logos, and other media.
+    ├── data/                   # Contains sample data files and database migration scripts.
+    │   └── migrations/         # SQL scripts for managing database schema migrations.
+    ├── tests/                  # Unit and integration tests for the app.
+    │   └── test_app.py         # Test scripts for verifying app functionality.
+    ├── config.py               # Configuration file for app settings and environment variables.
+    ├── Procfile                # Heroku process file defining how to run the app (e.g., using gunicorn).
+    ├── runtime.txt             # Specifies the Python version for the Heroku environment.
+    ├── requirements.txt        # Lists all Python package dependencies.
+    ├── README.md               # This file: documentation and project overview.
+    └── .gitignore              # Specifies files and directories to ignore in Git.
 
-### Prerequisites
-- Python 3.7+
-- pip (Python package installer)
+## Explanation of Folders and Files
 
-### Steps
-1. Clone the repository:
-   ```
-   git clone [your-repo-url]
+- **app/**  
+  Contains the core application code:
+  - **`__init__.py`**: Initializes the Dash application and configures the Flask server.
+  - **`app.py`**: The main entry point that starts the app.
+  - **`layout.py`**: Defines the app’s overall layout, including common elements like headers and footers.
+  - **`callbacks.py`**: Houses the callback functions that control app interactivity.
+  - **tabs/**: Splits the app into modular sections (tabs) for different data views:
+    - **`tab1.py`**: Handles the Gene Expression Visualization tab.
+    - **`tab2.py`**: Manages the RNA Isoform Exploration tab.
+    - **`tab3.py`**: Contains the Genotyping Data tab.
+    - Additional tabs can be added as required.
+
+- **assets/**  
+  A special folder automatically served by Dash for static content:
+  - **`custom.css`**: Custom styling to override or extend default styles.
+  - **`custom.js`**: Optional JavaScript for added functionality.
+  - **images/**: Stores images and logos used throughout the app.
+
+- **data/**  
+  Contains data files and scripts:
+  - **migrations/**: SQL scripts for database schema changes, useful for versioning your PostgreSQL database.
+
+- **tests/**  
+  Contains testing scripts to ensure the app works as intended:
+  - **`test_app.py`**: Unit and integration tests for verifying the layout, callbacks, and overall functionality.
+
+- **config.py**  
+  Central configuration for the app, managing settings and environment variables without hardcoding sensitive information.
+
+- **Procfile**  
+  Used by Heroku to determine how to run the application. For example:
+  
+      web: gunicorn app:server
+
+- **runtime.txt**  
+  Specifies the Python version (e.g., `python-3.9.7`) that Heroku should use when running the app.
+
+- **requirements.txt**  
+  Lists all Python dependencies so that the environment can be set up consistently.
+
+- **README.md**  
+  This documentation file provides an overview of the project, details on the folder structure, and setup instructions.
+
+- **.gitignore**  
+  Specifies which files and directories Git should ignore (e.g., virtual environments, temporary files).
+
+## Getting Started
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/my_dash_app.git
    cd my_dash_app
-   ```
-
-2. Create and activate a virtual environment:
-   ```
-   python -m venv venv
-   venv\Scripts\activate  # On Windows
-   source venv/bin/activate  # On Unix or MacOS
-   ```
-
-3. Install the required packages:
-   ```
-   pip install -r requirements.txt
-   ```
-
-4. Set up configuration:
-   - Review and edit `config.py` as needed for your environment.
-
-## Running the Application
-To run the application, execute:
-```
-python app/main.py
-```
-The application will be available at `http://127.0.0.1:8050/` by default.
-
-## Running Tests
-To run the tests, execute:
-```
-python -m pytest tests/
-```
-
-## Development
-
-### Adding New Features
-- Place new layout components in the `app/layouts/` directory.
-- Add new callbacks in the `app/callbacks/` directory.
-- For data processing functions, use the `app/data/` directory.
-
-### Styling
-- Add custom CSS and other static files to the `app/assets/` directory.
-
-## Deployment
-[Add information about how to deploy your Dash app, e.g., using Heroku, AWS, or other platforms]
-
-## Contributing
-[If applicable, add guidelines for how others can contribute to your project]
-
-## License
-[Specify the license under which your project is released]
