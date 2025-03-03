@@ -90,3 +90,4 @@ sql_database/
 *.tsv
 *.gtf
 *.raw
+!data/migrations/
