@@ -91,3 +91,4 @@ sql_database/
 *.gtf
 *.raw
 !data/migrations/
+!data/migrations/**
