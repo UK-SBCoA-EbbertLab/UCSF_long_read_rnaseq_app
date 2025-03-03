@@ -82,7 +82,7 @@ env.bak/
 venv.bak/
 
 # Data and Figures
-data/
+data/raw_data/
 figures/
 sql_database/
 *.db
@@ -90,6 +90,3 @@ sql_database/
 *.tsv
 *.gtf
 *.raw
-!data/migrations/
-!data/migrations/**
-!data/migrations/create_database.py
