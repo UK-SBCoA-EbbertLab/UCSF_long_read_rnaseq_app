@@ -15,6 +15,8 @@ db_url = "postgresql+psycopg2://postgres:isoforms@localhost:5432/ad_dash_app"
 
 engine = create_engine(db_url, pool_size=5, max_overflow=10)
 
+# Temporary placeholder for backward compatibility
+duck_conn = None
 
 try:
     with engine.connect() as connection:

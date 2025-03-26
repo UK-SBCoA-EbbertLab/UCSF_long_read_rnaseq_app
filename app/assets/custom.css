@@ -1,0 +1,56 @@
+/* Dropdown styling */
+.Select-control {
+    background-color: #ffffff !important;
+    border-color: #ced4da !important;
+}
+
+.Select-value-label {
+    color: #333333 !important;
+}
+
+.Select-menu-outer {
+    background-color: #ffffff !important;
+    border-color: #ced4da !important;
+}
+
+.Select-option {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+}
+
+.Select-option:hover {
+    background-color: #f8f9fa !important;
+}
+
+.Select-option.is-selected {
+    background-color: #e9ecef !important;
+    color: #2780E3 !important;
+}
+
+.Select-value {
+    background-color: #f8f9fa !important;
+    border-color: #ced4da !important;
+}
+
+/* Added styles for placeholder */
+.Select-placeholder {
+    color: #6c757d !important;
+}
+
+.Select input {
+    color: #333333 !important;
+}
+
+/* Additional COSMO theme styles */
+.nav-tabs-clean .nav-link {
+    color: #333333 !important;
+}
+
+.nav-tabs-clean .nav-link.active {
+    color: #2780E3 !important;
+    border-bottom-color: #2780E3 !important;
+}
+
+.nav-tabs-clean .nav-link:hover {
+    color: #2780E3 !important;
+} 

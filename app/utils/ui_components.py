@@ -1,0 +1,59 @@
+from dash import html, dcc
+import dash_bootstrap_components as dbc
+
+def create_gene_search_dropdown(initial_value=None, initial_options=None):
+    """Create a dropdown for gene search with specific styling."""
+    return dcc.Dropdown(
+        id='search-input',
+        placeholder="Enter gene name or ID...",
+        clearable=True,
+        searchable=True,
+        options=initial_options or [],
+        value=initial_value,
+        style={
+            "background-color": "#ffffff",
+            "color": "#333333",
+            "border": "1px solid rgba(0, 0, 0, 0.1)",
+            "border-radius": "4px"
+        }
+    )
+
+def create_matrix_dropdown(options, default_value=None):
+    """Create a standardized matrix selection dropdown component."""
+    return dcc.Dropdown(
+        id='matrix-table-dropdown',
+        options=options,
+        value=default_value,
+        placeholder="Select a data table...",
+        clearable=False,
+        style={
+            "background-color": "#ffffff",
+            "color": "#333333",
+            "border": "1px solid rgba(0, 0, 0, 0.1)",
+            "border-radius": "4px"
+        },
+        optionHeight=35
+    )
+
+def create_section_header(title):
+    """Create a standardized section header."""
+    return html.P(title,
+        style={
+            "color": "#333333",
+            "font-size": "1.1rem",
+            "margin-bottom": "1rem",
+            "font-weight": "500"
+        }
+    )
+
+def create_content_card(content):
+    """Create a standardized content card with consistent styling."""
+    return dbc.Card(
+        dbc.CardBody(content),
+        style={
+            "background-color": "#ffffff",
+            "border": "1px solid rgba(0, 0, 0, 0.1)",
+            "border-radius": "6px",
+            "box-shadow": "0 2px 4px rgba(0, 0, 0, 0.1)"
+        }
+    ) 
