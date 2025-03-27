@@ -105,7 +105,7 @@ layout = dbc.Container([
                                 value=False,
                                 inline=True
                             )
-                        ], className="radio-group-container")
+                        ], className="radio-group-container dbc")
                     ])
                 ], width=3),
                 dbc.Col([
@@ -121,7 +121,7 @@ layout = dbc.Container([
                                 value="boxplot",
                                 inline=True
                             )
-                        ], className="radio-group-container")
+                        ], className="radio-group-container dbc")
                     ])
                 ], width=3)
             ], className="mb-4 dbc"),

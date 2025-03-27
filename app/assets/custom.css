@@ -17,6 +17,8 @@ body {
 /* Ensure cards and content containers have consistent styling */
 .card, .dbc-card {
     background-color: #fcfcfc !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;  /* Darker border for better contrast */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* Add subtle shadow */
 }
 
 /* Make tab fonts bigger and improve their appearance */
@@ -40,28 +42,27 @@ body {
     background-color: rgba(39, 128, 227, 0.05);  /* Very light blue background on hover */
 }
 
-/* Compact styling for radio button containers */
-.card-body {
-    padding: 0.25rem !important;  /* Even smaller padding in card bodies */
-}
-
 /* Style radio button containers to match dropdown height */
 .radio-group-container {
     height: 28px;  /* Reduced height to match dropdown better */
     display: flex;
     align-items: center;
     padding: 0 0.5rem;  /* Add small horizontal padding */
+    background-color: #fcfcfc !important;  /* Ensure background matches container */
 }
 
 /* Adjust radio button spacing */
 .radio-group-container .form-check {
     margin-right: 0.75rem;  /* Reduced spacing between options */
     margin-bottom: 0;
+    background-color: #fcfcfc !important;  /* Ensure background matches container */
 }
 
 /* Ensure radio buttons align with other elements */
 .form-check-input {
     margin-top: 0.2rem;  /* Slightly reduced top margin */
+    background-color: #fff;  /* White background for the actual input */
+    border: 1.5px solid rgba(0, 0, 0, 0.4) !important;  /* Darker, thicker border */
 }
 
 .form-check-label {
@@ -69,6 +70,41 @@ body {
     line-height: 1.3;  /* Reduced line height */
     font-size: 1rem;  /* Slightly smaller font size */
     font-weight: bold;  /* Make the font bold */
+    background-color: transparent !important;  /* Transparent background to show parent bg */
+}
+
+/* Style for checkbox groups */
+.checkbox-group {
+    background-color: #fcfcfc !important;  /* Match the radio button container */
+    padding: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;  /* Add visible border */
+    border-radius: 4px;  /* Rounded corners */
+}
+
+.checkbox-group .form-check {
+    background-color: #fcfcfc !important;  /* Match container */
+    margin-bottom: 0.5rem;
+}
+
+.checkbox-group .form-check-label {
+    font-size: 1.1rem;  /* Match radio button font size */
+    line-height: 1.3;
+    margin-bottom: 0;
+}
+
+.checkbox-group .form-check-input {
+    margin-top: 0.2rem;
+}
+
+/* Fix form-check general styles to ensure proper backgrounds */
+.form-check {
+    background-color: #fcfcfc !important;
+}
+
+/* Style the radio buttons and checkboxes when checked */
+.form-check-input:checked {
+    border-color: #2780E3 !important;  /* Match the primary blue color when checked */
+    background-color: #2780E3 !important;  /* Match the primary blue color when checked */
 }
 
 /* Style search bar and dropdown text */
@@ -111,6 +147,8 @@ p[style*="font-size: 1.1rem"] {
 
 /* Style any other text elements in the cards */
 .card-body {
+    padding: 0.25rem !important;  /* Even smaller padding in card bodies */
+    background-color: #fcfcfc !important;  /* Ensure background matches container */
     font-size: 1.2rem !important;
     font-weight: normal !important;
 }

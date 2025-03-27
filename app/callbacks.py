@@ -378,6 +378,9 @@ def update_gene_plot(selected_table, selected_gene, selected_metadata, log_trans
                 'xanchor': 'center',
                 'yanchor': 'top',
                 'font': {'size': 26}
+            },
+            legend={
+                'traceorder': 'grouped+reversed'  # Group traces and reverse the order within groups
             })
             
         # Update subplot titles separately - the subplot_titles parameter should be a list, not a dict
