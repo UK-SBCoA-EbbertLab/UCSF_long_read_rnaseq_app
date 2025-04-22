@@ -5,7 +5,7 @@
 
 from dash import html, dcc
 import dash_bootstrap_components as dbc
-from app.tabs import tab0, tab1, tab2, tab3, tab4, tab5, tab6
+from app.tabs import tab0, tab1, tab2, tab3, tab4, tab5
 
 # Define some custom colors that complement COSMO theme
 COLORS = {
@@ -56,8 +56,7 @@ layout = dbc.Container([
             dbc.Tab(label="Isoform Explorer", tab_id="tab-2"),
             dbc.Tab(label="Isoform Correlations", tab_id="tab-3"),
             dbc.Tab(label="eQTL Explorer", tab_id="tab-4"),
-            dbc.Tab(label="Gene Coverage", tab_id="tab-5"),
-            dbc.Tab(label="Download Data", tab_id="tab-6")
+            dbc.Tab(label="Download Data", tab_id="tab-5")
         ],
         className="mb-4 nav-tabs-clean dbc",
         style={
@@ -105,6 +104,5 @@ content_layout = {
     "tab-2": tab2.layout(),
     "tab-3": tab3.layout(),
     "tab-4": tab4.layout(),
-    "tab-5": tab5.layout(),
-    "tab-6": tab6.layout()
+    "tab-5": tab5.layout()
 }

@@ -17,7 +17,6 @@ def layout():
                 html.Li("Isoform Exploration", id="tab0-list-item-2"),
                 html.Li("Isoform Correlations", id="tab0-list-item-3"),
                 html.Li("eQTL Analysis", id="tab0-list-item-4"),
-                html.Li("Gene Coverage Visualization", id="tab0-list-item-5"),
                 html.Li("Data Download Options", id="tab0-list-item-6")
             ], id="tab0-list")
         ], id="tab0-intro")

@@ -287,7 +287,8 @@ def update_density_plot(selected_gene, options, window_dimensions):
      Input('isoform-range-slider', 'value')]
 )
 def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected_metadata, log_transform, plot_style, window_dimensions, isoform_range):
-    if not selected_rsid or not selected_gene:
+    # Explicitly check for None instead of truthiness
+    if selected_rsid is None or selected_gene is None:
         # Return an empty figure wrapped in dcc.Graph component with tab2-like styling
         return html.Div(
             html.P("Please select a gene and RSID to display data", 
@@ -304,6 +305,10 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
             }
         ), None
     
+    # Add default window dimensions check
+    if not window_dimensions:
+        window_dimensions = {'width': 1200, 'height': 800}
+
     ## Create scaling factor
     scaling_factor = window_dimensions["width"]/2540
     
@@ -318,7 +323,7 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
     try:
         # Get the RSID data
         df_rsid = get_rsid_data(selected_rsid, with_polars=True)
-        
+
         # Set default genotype column name
         genotype_column = "genotype"
 
@@ -352,11 +357,6 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
         
         # Get data with metadata
         expression = get_gene_data_with_metadata(gene_index, with_polars=True, limit=None)
-
-        print(len(df_rsid["sample_id"].unique().to_list()))
-        print(df_rsid["sample_id"].unique())
-        print(expression["sample_id"].unique())
-        print(len(expression["sample_id"].unique().to_list()))
 
         if expression is None or len(expression) == 0:
             return go.Figure(), None
@@ -400,7 +400,9 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
         expression = expression.with_columns(pl.col("sample_id").cast(pl.Int64))
         df_rsid = df_rsid.join(expression, on="sample_id", how="inner")
 
-        
+        # Use df instead of df_rsid after the join for clarity
+        df = df_rsid 
+
         if annotation is None or len(annotation) == 0:
             return go.Figure(), None
 
@@ -419,11 +421,11 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
         # Use df (the joined dataframe) instead of expression
         df, annotation = order_transcripts_by_expression(
             annotation_df=annotation, 
-            expression_df=df_rsid, 
+            expression_df=df, # Use df here
             expression_column=tmm_col,
             top_n=zero_based_range  # Use the converted range
         )
-        
+
         # Handle metadata selection for expression_hue
         if selected_metadata is None or len(selected_metadata) == 0:
             # No metadata selected, use genotype as default
@@ -450,7 +452,7 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
             # Filter out rows with missing data in any of the selected metadata columns
             for col_name in selected_metadata:
                 df = df.filter(~pl.col(col_name).is_null())
-                
+
             expression_hue = combined_col_name
             group_col = combined_col_name
 
@@ -492,7 +494,8 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
             "marker_size": 5*scaling_factor,
             "arrow_size": 12*scaling_factor,
             "expression_plot_style": plot_style,  # Add the plot style parameter
-            "annotation_color_map": annotation_colormap  # Add the annotation colormap here
+            "annotation_color_map": annotation_colormap,  # Add the annotation colormap here
+            "expression_plot_legend_title": f"<b><u>Expression Plot Hue<u><b> SNP: ({df_rsid['rsid'][0]})"
         }
         
         ## Create appropriate color palette for the expression_hue

@@ -107,7 +107,7 @@ def update_density_plot(selected_gene, options, window_dimensions):
         margin=dict(l=50, r=20, t=60, b=50)
     )
 
-    if not selected_gene:
+    if selected_gene is None:
         return fig
 
     try:
@@ -225,7 +225,7 @@ def update_search_options(search_value, selected_value):
      Input('window-dimensions', 'data')]
 )
 def update_gene_level_plot(selected_gene, options, selected_metadata, log_transform, plot_style, count_type, window_dimensions):
-    if not selected_gene:
+    if selected_gene is None:
         return go.Figure()
 
     # If no count type is selected, use total counts by default
@@ -924,7 +924,7 @@ def update_tab2_responsiveness(dimensions):
 )
 def update_gene_plot_tab2(selected_table, selected_gene, selected_metadata, log_transform, plot_style, window_dimensions, isoform_range):
     # Return message if no gene is selected
-    if not selected_gene:
+    if selected_gene is None:
         return html.Div(
             html.P("Please select a gene to display data",
                   style={"color": "#666666", "margin": 0}),
@@ -1184,7 +1184,7 @@ def update_gene_plot_tab2(selected_table, selected_gene, selected_metadata, log_
     [Input('search-input-tab2', 'value')]
 )
 def update_slider_range_tab2(selected_gene):
-    if not selected_gene:
+    if selected_gene is None:
         # Default range when no gene is selected
         marks = {i: str(i) for i in range(1, 11)}
         return 10, marks, [1, 5]

@@ -753,21 +753,38 @@ def get_rsid_data(rsid_index, with_polars=True):
 
     try:
         with pg_engine.connect() as conn:
-            # Build the main query with joins - filter first then join
+            # Build the main query: Filter -> Unpivot -> Join
             query = text("""
                 WITH filtered_genotyping AS (
-                    SELECT sample_id, genotype_index, rsid_index
+                    -- Select the single row for the target rsid_index
+                    SELECT *
                     FROM genotyping
                     WHERE rsid_index = :rsid_index
+                ),
+                unpivoted_genotyping AS (
+                    -- Unpivot the wide table using JSON functions
+                    SELECT
+                        fg.rsid_index,
+                        -- The key from jsonb_each_text is the column name (sample_id)
+                        (kv.key)::bigint AS sample_id,
+                        -- The value is the genotype_index stored in that column
+                        (kv.value)::integer AS genotype_index
+                    FROM
+                        filtered_genotyping fg,
+                        -- Convert the row to JSONB, remove the rsid_index key,
+                        -- then iterate through the remaining key-value pairs (sample_id:genotype_index)
+                        jsonb_each_text(to_jsonb(fg) - 'rsid_index') AS kv(key, value)
+                    -- Ensure we only process valid genotype_index values if they can be NULL
+                    WHERE kv.value IS NOT NULL AND kv.value != ''
                 )
+                -- Join the unpivoted data with index tables to get actual rsid and genotype
                 SELECT
-                    g.sample_id,
+                    ug.sample_id,
                     ri.rsid,
                     gi.genotype
-                    -- Add other columns from genotyping table if needed, e.g., g.some_other_column
-                FROM filtered_genotyping g
-                JOIN rsid_index_table ri ON g.rsid_index = ri.rsid_index
-                JOIN genotype_index_table gi ON g.genotype_index = gi.genotype_index
+                FROM unpivoted_genotyping ug
+                JOIN rsid_index_table ri ON ug.rsid_index = ri.rsid_index
+                JOIN genotype_index_table gi ON ug.genotype_index = gi.genotype_index
             """)
 
             # Read directly to pandas

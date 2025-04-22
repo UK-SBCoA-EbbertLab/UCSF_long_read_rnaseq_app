@@ -384,9 +384,33 @@ def process_file(file_path):
             if table_name == "coverage_table" and "average_coverage" in optimized_types:
                 optimized_types["average_coverage"] = "INTEGER"
                 print("Forcing average_coverage column to INTEGER as requested")
-            
+
+            # === Add specific handling for genotyping table ===
+            if table_name == "genotyping":
+                print(f"Applying specific type overrides for genotyping table...")
+                new_optimized_types = {}
+                for column, dtype in optimized_types.items():
+                    if column == "rsid_index":
+                        new_optimized_types[column] = "INTEGER"
+                    # Check if the sampled type is an integer variant
+                    elif dtype in ['SMALLINT', 'INTEGER', 'BIGINT']:
+                        new_optimized_types[column] = "SMALLINT"
+                    else:
+                        # Keep non-integer types as determined by sampling
+                        new_optimized_types[column] = dtype
+                optimized_types = new_optimized_types
+                print(f"Final optimized types for genotyping: {optimized_types}")
+            # === End specific handling ===
+
             # Force specific columns to INTEGER type regardless of table
-            for col in ["gene_index", "transcript_index", "rsid_index", "start", "end", "pos"]:
+            # Note: We remove rsid_index here as it's handled above for genotyping specifically
+            # and the generic logic below might conflict or be redundant.
+            # For other tables, rsid_index will still be handled below if present.
+            force_integer_cols = ["gene_index", "transcript_index", "start", "end", "pos"]
+            if table_name != "genotyping" and "rsid_index" in optimized_types:
+                 force_integer_cols.append("rsid_index") # Add it back for non-genotyping tables
+
+            for col in force_integer_cols:
                 if col in optimized_types:
                     optimized_types[col] = "INTEGER"
                     print(f"Forcing {col} column to INTEGER as requested")

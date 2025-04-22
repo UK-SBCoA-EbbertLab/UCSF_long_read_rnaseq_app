@@ -1,12 +1,12 @@
 # File: app/tabs/tab5.py
-# Contains the layout for Tab 5.
+# Contains the layout for Tab 5 (formerly Tab 6).
 
 from dash import html, Input, Output, callback
 import dash_bootstrap_components as dbc
 
 def layout():
     return dbc.Container([
-        html.H2("This is Tab 5", 
+        html.H2("Download Data", 
             id="tab5-header",
             className="mt-3 dbc",
             style={
@@ -17,7 +17,7 @@ def layout():
         ),
         dbc.Card([
             dbc.CardBody([
-                html.P("Welcome to Tab 5 of this simple Dash app!",
+                html.P("Content for the Download Data tab will go here.",
                     id="tab5-content",
                     style={
                         "color": "#666666",
