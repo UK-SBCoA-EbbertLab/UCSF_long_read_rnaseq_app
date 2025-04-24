@@ -535,7 +535,7 @@ def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fi
         
         # Create a temporary directory for our files
         temp_dir = tempfile.mkdtemp()
-        zip_filename = f"{gene_name}_RNA_isoform_expression_plots.zip"
+        zip_filename = f"{gene_name}_RNA_isoform_correlation_plots.zip"
         zip_path = os.path.join(temp_dir, zip_filename)
         
         # Create a zip file
@@ -568,7 +568,7 @@ def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fi
                 
             # Export the gene expression plot    
             if gene_level_fig:
-                gene_expr_svg_name = f"{gene_name}_gene_expression_plot.svg"
+                gene_expr_svg_name = f"{gene_name}_gene_scatter_plot.svg"
                 # Extract axis labels from annotations before modifying for SVG
                 original_fig = go.Figure(gene_level_fig)
                 svg_x_label = None
@@ -694,7 +694,7 @@ def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fi
 
             # Export the RNA isoform plot if available
             if isoform_fig:
-                isoform_svg_name = f"{gene_name}_RNA_isoform_plot.svg"
+                isoform_svg_name = f"{gene_name}_RNA_isoform_structure_plot.svg"
                 try:
                     real_fig = go.Figure(isoform_fig)
                     isoform_svg = real_fig.to_image(format="svg").decode('utf-8')

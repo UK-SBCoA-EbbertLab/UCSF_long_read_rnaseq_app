@@ -424,7 +424,6 @@ def download_plots_as_svg(n_clicks, density_fig, gene_level_fig, isoform_fig, se
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             # Export the density plot
             if density_fig:
-                print("Creating density plot SVG")
                 density_svg_name = f"{gene_name}_density_distribution_plot.svg"
                 real_fig = go.Figure(density_fig)
                 # Update layout for larger size and wider ratio
@@ -448,11 +447,9 @@ def download_plots_as_svg(n_clicks, density_fig, gene_level_fig, isoform_fig, se
                 )
                 density_svg = real_fig.to_image(format="svg").decode('utf-8')
                 zipf.writestr(density_svg_name, density_svg)
-                print(f"Added density plot to zip: {density_svg_name}")
                 
             # Export the gene expression plot    
             if gene_level_fig:
-                print("Creating gene expression plot SVG")
                 gene_expr_svg_name = f"{gene_name}_gene_expression_plot.svg"
                 real_fig = go.Figure(gene_level_fig)
                 # Update layout for larger size and wider ratio

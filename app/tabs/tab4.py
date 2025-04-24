@@ -815,7 +815,7 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, log_transf
                 traceorder="reversed"
             ),
             title={
-                'text': f"Total Gene Expression: {gene_name}",
+                'text': f"Total Gene Expression: {gene_name} grouped by {df_rsid['rsid'][0]} genotype",
                 'y':0.97, # Adjusted y position slightly
                 'x':0.02,
                 'xanchor': 'left',
@@ -863,19 +863,29 @@ def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_f
             WHERE gene_index = ?
             LIMIT 1
         """, [selected_gene]).fetchone()
+
+        # Get the gene name for the filename
+        rsid_info = duck_conn.execute("""
+            SELECT rsid_index, rsid
+            FROM rsid_index_table 
+            WHERE rsid_index = ?
+            LIMIT 1
+        """, [selected_rsid]).fetchone()
+
+        rsid_name = rsid_info[1] if rsid_info else selected_rsid
         
         gene_name = gene_info[2] if gene_info else selected_gene
         
         # Create a temporary directory for our files
         temp_dir = tempfile.mkdtemp()
-        zip_filename = f"{gene_name}_{selected_rsid}_RNA_isoform_expression_plots.zip"
+        zip_filename = f"{gene_name}_{rsid_name}_QTL_plots.zip"
         zip_path = os.path.join(temp_dir, zip_filename)
         
         # Create a zip file
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             # Export the density plot
             if density_fig:
-                density_svg_name = f"{gene_name}_{selected_rsid}_density_distribution_plot.svg"
+                density_svg_name = f"{gene_name}_{rsid_name}_density_distribution_plot.svg"
                 real_fig = go.Figure(density_fig)
                 # Update layout for larger size and wider ratio
                 real_fig.update_layout(
@@ -901,7 +911,7 @@ def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_f
                 
             # Export the gene expression plot    
             if gene_level_fig:
-                gene_expr_svg_name = f"{gene_name}_{selected_rsid}_gene_expression_plot.svg"
+                gene_expr_svg_name = f"{gene_name}_{rsid_name}_gene_expression_plot.svg"
                 real_fig = go.Figure(gene_level_fig)
                 # Update layout for larger size and wider ratio
                 real_fig.update_layout(
@@ -934,7 +944,7 @@ def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_f
                 
             # Export the genotype plot
             if genotype_fig:
-                genotype_svg_name = f"{gene_name}_{selected_rsid}_genotype_plot.svg"
+                genotype_svg_name = f"{gene_name}_{rsid_name}_genotype_plot.svg"
                 try:
                     real_fig = go.Figure(genotype_fig)
                     genotype_svg = real_fig.to_image(format="svg").decode('utf-8')
@@ -944,7 +954,7 @@ def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_f
                     # Create placeholder instead
                     placeholder_fig = go.Figure()
                     placeholder_fig.add_annotation(
-                        text=f"Genotype Plot for {gene_name} and {selected_rsid} (could not render)",
+                        text=f"Genotype Plot for {gene_name} and {rsid_name} (could not render)",
                         x=0.5, y=0.5,
                         showarrow=False,
                         font=dict(size=20)
@@ -954,10 +964,10 @@ def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_f
             else:
                 # Create a placeholder if genotype fig is not available
                 print("No genotype figure found, creating placeholder")
-                genotype_svg_name = f"{gene_name}_{selected_rsid}_RNA_isoform_plot.svg"
+                genotype_svg_name = f"{gene_name}_{rsid_name}_RNA_isoform_plot.svg"
                 placeholder_fig = go.Figure()
                 placeholder_fig.add_annotation(
-                    text=f"Genotype Plot for {gene_name} and {selected_rsid}",
+                    text=f"Genotype Plot for {gene_name} and {rsid_name}",
                     x=0.5, y=0.5,
                     showarrow=False,
                     font=dict(size=20)
