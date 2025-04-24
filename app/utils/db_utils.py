@@ -819,3 +819,132 @@ def get_rsid_data(rsid_index, with_polars=True):
         # Fallback is less useful here as the primary issue might be joins or missing index
         # Reraise the exception for better debugging
         raise Exception(f"Error processing rsid_index '{rsid_index}': {str(e)}")
+
+def search_genes_tab1(search_value, previous_search=None):
+    """
+    Search for genes using the in-memory index.
+    Modified version for tab1 that returns gene_name as the value.
+    
+    Args:
+        search_value (str): The current search value
+        previous_search (str): The previous search value, not used in this implementation
+    """
+    if not search_value:
+        return []
+    
+    # Make sure gene index is loaded
+    if not GENE_INDEX_LOADED:
+        _load_gene_index()
+    
+    # If still no genes, fall back to database search
+    if not ALL_GENES:
+        return _search_genes_tab1_database(search_value)
+    
+    # Convert to lowercase once
+    search_value = search_value.lower()
+    
+    # In-memory search
+    filtered_results = []
+    exact_matches = []
+    prefix_matches = []
+    contains_matches = []
+    
+    # First pass: categorize matches
+    for gene_id, gene_name, gene_index in ALL_GENES:
+        lower_id = gene_id.lower()
+        lower_name = gene_name.lower()
+        
+        # Exact match (highest priority)
+        if lower_id == search_value or lower_name == search_value:
+            exact_matches.append((gene_id, gene_name, gene_index))
+        # Prefix match (medium priority)
+        elif lower_id.startswith(search_value) or lower_name.startswith(search_value):
+            prefix_matches.append((gene_id, gene_name, gene_index))
+        # Contains match (lowest priority)
+        elif search_value in lower_id or search_value in lower_name:
+            contains_matches.append((gene_id, gene_name, gene_index))
+            
+        # Stop when we have enough matches
+        if len(exact_matches) >= 10:
+            break
+    
+    # Combine results in priority order
+    filtered_results = exact_matches
+    
+    # Add prefix matches if needed
+    if len(filtered_results) < 10:
+        filtered_results.extend(prefix_matches[:10 - len(filtered_results)])
+    
+    # Add contains matches if needed
+    if len(filtered_results) < 10:
+        filtered_results.extend(contains_matches[:10 - len(filtered_results)])
+    
+    # Convert to options format
+    options = []
+    for gene_id, gene_name, gene_index in filtered_results[:10]:
+        options.append({
+            'label': f"{gene_name} ({gene_id})",
+            'value': gene_name  # Return gene_name instead of gene_index
+        })
+    
+    return options
+
+def _search_genes_tab1_database(search_value):
+    """Fallback to database search if in-memory index fails - returns gene_name as value"""
+    try:
+        with pg_engine.connect() as conn:
+            # For very short searches, just do a prefix match
+            if len(search_value) < 3:
+                query = text("""
+                    SELECT DISTINCT gene_id, gene_name, gene_index
+                    FROM gene_and_transcript_index_table 
+                    WHERE LOWER(gene_id) LIKE :prefix
+                    OR LOWER(gene_name) LIKE :prefix
+                    LIMIT 10
+                """)
+                result = conn.execute(query, {"prefix": f"{search_value.lower()}%"}).fetchall()
+            else:
+                # For longer searches, do a more comprehensive search
+                query = text("""
+                    WITH ranked_results AS (
+                        SELECT DISTINCT 
+                            gene_id,
+                            gene_name,
+                            gene_index,
+                            CASE 
+                                WHEN LOWER(gene_id) = :exact THEN 1
+                                WHEN LOWER(gene_name) = :exact THEN 2
+                                WHEN LOWER(gene_id) LIKE :prefix THEN 3
+                                WHEN LOWER(gene_name) LIKE :prefix THEN 4
+                                ELSE 5
+                            END as match_rank
+                        FROM gene_and_transcript_index_table 
+                        WHERE (
+                            LOWER(gene_id) LIKE :pattern
+                            OR LOWER(gene_name) LIKE :pattern
+                        )
+                    )
+                    SELECT gene_id, gene_name, gene_index
+                    FROM ranked_results
+                    ORDER BY match_rank, gene_name
+                    LIMIT 10
+                """)
+                
+                result = conn.execute(query, {
+                    "exact": search_value.lower(),
+                    "prefix": f"{search_value.lower()}%",
+                    "pattern": f"%{search_value.lower()}%"
+                }).fetchall()
+            
+            # Convert to options format
+            options = []
+            for gene_id, gene_name, gene_index in result:
+                options.append({
+                    'label': f"{gene_name} ({gene_id})",
+                    'value': gene_name  # Return gene_name instead of gene_index
+                })
+            
+            return options
+    except Exception as e:
+        print(f"Error in database search: {e}")
+        return []
