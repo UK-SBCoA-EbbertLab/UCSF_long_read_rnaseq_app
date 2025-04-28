@@ -15,8 +15,20 @@ import numpy as np
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
-# Database connection settings - optimized for high-end hardware
-db_url = "postgresql+psycopg2://postgres:isoforms@localhost:5432/ad_dash_app"
+# Get DATABASE_URL from environment (Heroku provides this) or use local config
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    # Heroku's DATABASE_URL starts with postgres://, but SQLAlchemy requires postgresql://
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    db_url = DATABASE_URL
+    print("Using Heroku PostgreSQL database for migrations")
+else:
+    # Local database fallback
+    db_url = "postgresql+psycopg2://postgres:isoforms@localhost:5432/ad_dash_app"
+    print("Using local PostgreSQL database for migrations")
+
 engine = create_engine(
     db_url, 
     pool_size=20,               # Increased for parallel operations

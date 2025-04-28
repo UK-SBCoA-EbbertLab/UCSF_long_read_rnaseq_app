@@ -23,15 +23,25 @@ pd.set_option('display.max_columns', 100)  # Show up to 100 columns
 pd.set_option('display.width', 2000)  # Increase width for better display
 pd.set_option('display.max_colwidth', 100)  # Don't truncate string values
 
-# Database connection configuration
-PG_HOST = 'localhost'
-PG_PORT = '5432'
-PG_DB = 'ad_dash_app'
-PG_USER = 'postgres'
-PG_PASSWORD = 'isoforms'
+# Get DATABASE_URL from environment (Heroku provides this) or use local config
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 # Initialize SQLAlchemy engine - global connection
-pg_engine = create_engine(f'postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}')
+if DATABASE_URL:
+    # Heroku's DATABASE_URL starts with postgres://, but SQLAlchemy requires postgresql://
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    pg_engine = create_engine(DATABASE_URL)
+    print("Connected to Heroku PostgreSQL database")
+else:
+    # Local database fallback
+    PG_HOST = 'localhost'
+    PG_PORT = '5432'
+    PG_DB = 'ad_dash_app'
+    PG_USER = 'postgres'
+    PG_PASSWORD = 'isoforms'
+    pg_engine = create_engine(f'postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}')
+    print("Connected to local PostgreSQL database")
 
 # DuckDB compatibility wrapper around Postgres connection
 class PostgresDuckWrapper:
