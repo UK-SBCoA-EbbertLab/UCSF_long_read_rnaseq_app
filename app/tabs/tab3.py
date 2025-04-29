@@ -518,6 +518,9 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, trendline_
      State('metadata-checklist-tab3', 'value')],
 )
 def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fig, selected_gene, scatter_fig, selected_metadata):
+ 
+    import plotly.io as pio
+
     if n_clicks is None or not n_clicks or selected_gene is None:
         return no_update
     
@@ -729,6 +732,9 @@ def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fi
             
         # Clean up temp directory
         shutil.rmtree(temp_dir)
+
+        # Shutdown kaleido scope to avoid memory waste
+        pio.kaleido.scope._shutdown_kaleido()
             
         # Return the zip file
         return dict(

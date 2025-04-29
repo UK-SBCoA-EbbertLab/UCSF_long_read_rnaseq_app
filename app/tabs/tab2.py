@@ -396,6 +396,9 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, log_transf
      State('search-input-tab2', 'value')]
 )
 def download_plots_as_svg(n_clicks, density_fig, gene_level_fig, isoform_fig, selected_gene):
+
+    import plotly.io as pio
+
     if n_clicks is None or not n_clicks or selected_gene is None:
         return no_update
     
@@ -521,6 +524,9 @@ def download_plots_as_svg(n_clicks, density_fig, gene_level_fig, isoform_fig, se
         # Clean up temp directory
         import shutil
         shutil.rmtree(temp_dir)
+
+        # Shutdown kaleido scope to avoid memory waste
+        pio.kaleido.scope._shutdown_kaleido()
             
         # Return the zip file
         return dict(

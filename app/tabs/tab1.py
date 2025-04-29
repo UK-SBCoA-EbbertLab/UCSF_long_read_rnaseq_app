@@ -1058,7 +1058,7 @@ def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_compar
                 zipf.write(tmp_svg, arcname=dge_svg_name)
                 print("DGE plot added to zip.")
                 os.remove(tmp_svg)
-                pio.kaleido.scope.shutdown()
+                pio.kaleido.scope._shutdown_kaleido()
 
             else:
                 print("No DGE figure found")
@@ -1096,7 +1096,7 @@ def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_compar
                 zipf.write(tmp_svg, arcname=dte_svg_name)
                 print("DTE plot added to zip.")
                 os.remove(tmp_svg)
-                pio.kaleido.scope.shutdown()
+                pio.kaleido.scope._shutdown_kaleido()
             else:
                 print("No DTE figure found")
             
@@ -1133,7 +1133,8 @@ def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_compar
                 zipf.write(tmp_svg, arcname=dtu_svg_name)
                 print("DTU plot added to zip.")
                 os.remove(tmp_svg)
-                pio.kaleido.scope.shutdown()
+                pio.kaleido.scope._shutdown_kaleido()
+
             else:
                 print("No DTU figure found")
         
