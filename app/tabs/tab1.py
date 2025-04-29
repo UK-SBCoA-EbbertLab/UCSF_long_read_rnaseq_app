@@ -1041,11 +1041,14 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             # Process DGE Plot
             print("Processing DGE plot...")
-            dge_fig = extract_figure(dge_plot_children)
-            if dge_fig:
+            dge_fig_dict = extract_figure(dge_plot_children)
+            if dge_fig_dict:
                 dge_svg_name = f"Differential_gene_expression_{comparison_text}.svg"
                 
-                # Update layout in-place without creating a copy
+                # Convert dict to Figure object - needed because the extracted figure is a dict
+                dge_fig = go.Figure(dge_fig_dict)
+                
+                # Update layout on the Figure object
                 dge_fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
@@ -1072,17 +1075,20 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                 zipf.writestr(dge_svg_name, dge_svg)
                 
                 # Clear references and garbage collect
-                del dge_fig, dge_svg, dge_plot_children
+                del dge_fig_dict, dge_fig, dge_svg, dge_plot_children
                 gc.collect()
                 print("DGE plot processed and added to zip.")
             
             # Process DTE Plot
             print("Processing DTE plot...")
-            dte_fig = extract_figure(dte_plot_children)
-            if dte_fig:
+            dte_fig_dict = extract_figure(dte_plot_children)
+            if dte_fig_dict:
                 dte_svg_name = f"Differential_transcript_expression_{comparison_text}.svg"
                 
-                # Update layout in-place 
+                # Convert dict to Figure object
+                dte_fig = go.Figure(dte_fig_dict)
+                
+                # Update layout on the Figure object
                 dte_fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
@@ -1109,17 +1115,20 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                 zipf.writestr(dte_svg_name, dte_svg)
                 
                 # Clear references and garbage collect
-                del dte_fig, dte_svg, dte_plot_children
+                del dte_fig_dict, dte_fig, dte_svg, dte_plot_children
                 gc.collect()
                 print("DTE plot processed and added to zip.")
             
             # Process DTU Plot
             print("Processing DTU plot...")
-            dtu_fig = extract_figure(dtu_plot_children)
-            if dtu_fig:
+            dtu_fig_dict = extract_figure(dtu_plot_children)
+            if dtu_fig_dict:
                 dtu_svg_name = f"Differential_transcript_usage_{comparison_text}.svg"
                 
-                # Update layout in-place
+                # Convert dict to Figure object
+                dtu_fig = go.Figure(dtu_fig_dict)
+                
+                # Update layout on the Figure object
                 dtu_fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
@@ -1146,7 +1155,7 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                 zipf.writestr(dtu_svg_name, dtu_svg)
                 
                 # Clear references and garbage collect
-                del dtu_fig, dtu_svg, dtu_plot_children
+                del dtu_fig_dict, dtu_fig, dtu_svg, dtu_plot_children
                 gc.collect()
                 print("DTU plot processed and added to zip.")
         
