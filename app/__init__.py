@@ -1,3 +1,5 @@
+print("[DEBUG] app/__init__.py: Starting execution")
+
 from dash import Dash
 import dash_bootstrap_components as dbc
 import atexit

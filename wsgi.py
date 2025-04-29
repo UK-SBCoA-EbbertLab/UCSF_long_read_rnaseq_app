@@ -1,3 +1,4 @@
+print("[DEBUG] wsgi.py: Starting execution")
 # File: wsgi.py
 # The main entry point for both local development and Heroku deployment.
 
