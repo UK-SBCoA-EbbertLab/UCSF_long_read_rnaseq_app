@@ -16,10 +16,6 @@ import pandas as pd
 import json
 from io import StringIO
 import numpy as np
-import gc # Import garbage collector
-# Heavy imports for SVG download moved out of callback
-import tempfile, zipfile, os, shutil
-import base64
 
 # Store the last valid search options to prevent them from disappearing
 last_valid_options = []
@@ -994,6 +990,13 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
      State('window-dimensions', 'data')]  # Keep window dimensions for consistency
 )
 def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, dtu_plot_children, selected_gene_name, group_comparison, window_dimensions):
+    from dash import no_update
+    import tempfile
+    import zipfile
+    import os
+    import base64
+    import shutil
+    
     if n_clicks is None or not n_clicks:
         return no_update
     
@@ -1033,18 +1036,17 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
             
             return None
         
-        # Process one figure at a time to save memory
+        # Create a zip file
         with zipfile.ZipFile(zip_path, 'w') as zipf:
-            # Process DGE Plot
-            print("Processing DGE plot...")
-            dge_fig_dict = extract_figure(dge_plot_children)
-            if dge_fig_dict:
+            # Extract figures from the plot children if they exist
+            
+            # DGE Plot
+            dge_fig = extract_figure(dge_plot_children)
+            if dge_fig:
                 dge_svg_name = f"Differential_gene_expression_{comparison_text}.svg"
                 
-                # Convert dict to Figure object - needed because the extracted figure is a dict
-                dge_fig = go.Figure(dge_fig_dict)
-                
-                # Update layout on the Figure object
+                # Update layout for larger size and wider ratio
+                dge_fig = go.Figure(dge_fig)  # Create a copy to avoid modifying the original
                 dge_fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
@@ -1066,27 +1068,18 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                # Write SVG directly to disk instead of keeping in memory
-                svg_path = os.path.join(temp_dir, dge_svg_name)
-                dge_fig.write_image(svg_path)
-                zipf.write(svg_path, arcname=dge_svg_name)
-                os.remove(svg_path)  # Remove file to free disk space
-                
-                # Clear references and garbage collect
-                del dge_fig_dict, dge_fig, dge_plot_children
-                gc.collect()
-                print("DGE plot processed and added to zip.")
+                dge_svg = dge_fig.to_image(format="svg").decode('utf-8')
+                zipf.writestr(dge_svg_name, dge_svg)
+            else:
+                print("No DGE figure found")
             
-            # Process DTE Plot
-            print("Processing DTE plot...")
-            dte_fig_dict = extract_figure(dte_plot_children)
-            if dte_fig_dict:
+            # DTE Plot
+            dte_fig = extract_figure(dte_plot_children)
+            if dte_fig:
                 dte_svg_name = f"Differential_transcript_expression_{comparison_text}.svg"
                 
-                # Convert dict to Figure object
-                dte_fig = go.Figure(dte_fig_dict)
-                
-                # Update layout on the Figure object
+                # Update layout for larger size and wider ratio
+                dte_fig = go.Figure(dte_fig)  # Create a copy to avoid modifying the original
                 dte_fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
@@ -1108,27 +1101,18 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                # Write SVG directly to disk instead of keeping in memory
-                svg_path = os.path.join(temp_dir, dte_svg_name)
-                dte_fig.write_image(svg_path)
-                zipf.write(svg_path, arcname=dte_svg_name)
-                os.remove(svg_path)  # Remove file to free disk space
-                
-                # Clear references and garbage collect
-                del dte_fig_dict, dte_fig, dte_plot_children
-                gc.collect()
-                print("DTE plot processed and added to zip.")
+                dte_svg = dte_fig.to_image(format="svg").decode('utf-8')
+                zipf.writestr(dte_svg_name, dte_svg)
+            else:
+                print("No DTE figure found")
             
-            # Process DTU Plot
-            print("Processing DTU plot...")
-            dtu_fig_dict = extract_figure(dtu_plot_children)
-            if dtu_fig_dict:
+            # DTU Plot
+            dtu_fig = extract_figure(dtu_plot_children)
+            if dtu_fig:
                 dtu_svg_name = f"Differential_transcript_usage_{comparison_text}.svg"
                 
-                # Convert dict to Figure object
-                dtu_fig = go.Figure(dtu_fig_dict)
-                
-                # Update layout on the Figure object
+                # Update layout for larger size and wider ratio
+                dtu_fig = go.Figure(dtu_fig)  # Create a copy to avoid modifying the original
                 dtu_fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
@@ -1150,41 +1134,23 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                # Write SVG directly to disk instead of keeping in memory
-                svg_path = os.path.join(temp_dir, dtu_svg_name)
-                dtu_fig.write_image(svg_path)
-                zipf.write(svg_path, arcname=dtu_svg_name)
-                os.remove(svg_path)  # Remove file to free disk space
-                
-                # Clear references and garbage collect
-                del dtu_fig_dict, dtu_fig, dtu_plot_children
-                gc.collect()
-                print("DTU plot processed and added to zip.")
+                dtu_svg = dtu_fig.to_image(format="svg").decode('utf-8')
+                zipf.writestr(dtu_svg_name, dtu_svg)
+            else:
+                print("No DTU figure found")
         
-        # Stream the zip file in a memory-efficient way
-        # We'll use a generator to read and encode in chunks
-        # This prevents loading the entire file into memory at once
-        def generate_base64_chunks(file_path, chunk_size=8192):
-            with open(file_path, 'rb') as f:
-                chunk = f.read(chunk_size)
-                while chunk:
-                    encoded_chunk = base64.b64encode(chunk).decode('utf-8')
-                    gc.collect()  # Collect garbage after each chunk
-                    yield encoded_chunk
-                    chunk = f.read(chunk_size)
         
-        # Join all chunks into a single string
-        encoded_content = ''.join(generate_base64_chunks(zip_path))
-        
+        # Read the zip file
+        with open(zip_path, 'rb') as f:
+            zip_data = f.read()
+            
         # Clean up temp directory
         shutil.rmtree(temp_dir)
         
-        # One final garbage collection
-        gc.collect()
-        
-        # Return the zip file for download
+            
+        # Return the zip file
         return dict(
-            content=encoded_content,
+            content=base64.b64encode(zip_data).decode(),
             filename=zip_filename,
             type="application/zip",
             base64=True
