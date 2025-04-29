@@ -17,6 +17,10 @@ import json
 from io import StringIO
 import numpy as np
 import gc # Import garbage collector
+# Heavy imports for SVG download moved out of callback
+import tempfile, zipfile, os, shutil
+import base64
+from dash_extensions.snippets import send_file
 
 # Store the last valid search options to prevent them from disappearing
 last_valid_options = []
@@ -991,13 +995,6 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
      State('window-dimensions', 'data')]  # Keep window dimensions for consistency
 )
 def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, dtu_plot_children, selected_gene_name, group_comparison, window_dimensions):
-    from dash import no_update
-    import tempfile
-    import zipfile
-    import os
-    import base64
-    import shutil
-    
     if n_clicks is None or not n_clicks:
         return no_update
     
@@ -1070,12 +1067,14 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                # Generate SVG and immediately write to zip
-                dge_svg = dge_fig.to_image(format="svg")
-                zipf.writestr(dge_svg_name, dge_svg)
+                # Write SVG directly to disk instead of keeping in memory
+                svg_path = os.path.join(temp_dir, dge_svg_name)
+                dge_fig.write_image(svg_path)
+                zipf.write(svg_path, arcname=dge_svg_name)
+                os.remove(svg_path)  # Remove file to free disk space
                 
                 # Clear references and garbage collect
-                del dge_fig_dict, dge_fig, dge_svg, dge_plot_children
+                del dge_fig_dict, dge_fig, dge_plot_children
                 gc.collect()
                 print("DGE plot processed and added to zip.")
             
@@ -1110,12 +1109,14 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                # Generate SVG and immediately write to zip
-                dte_svg = dte_fig.to_image(format="svg")
-                zipf.writestr(dte_svg_name, dte_svg)
+                # Write SVG directly to disk instead of keeping in memory
+                svg_path = os.path.join(temp_dir, dte_svg_name)
+                dte_fig.write_image(svg_path)
+                zipf.write(svg_path, arcname=dte_svg_name)
+                os.remove(svg_path)  # Remove file to free disk space
                 
                 # Clear references and garbage collect
-                del dte_fig_dict, dte_fig, dte_svg, dte_plot_children
+                del dte_fig_dict, dte_fig, dte_plot_children
                 gc.collect()
                 print("DTE plot processed and added to zip.")
             
@@ -1150,32 +1151,19 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                # Generate SVG and immediately write to zip
-                dtu_svg = dtu_fig.to_image(format="svg")
-                zipf.writestr(dtu_svg_name, dtu_svg)
+                # Write SVG directly to disk instead of keeping in memory
+                svg_path = os.path.join(temp_dir, dtu_svg_name)
+                dtu_fig.write_image(svg_path)
+                zipf.write(svg_path, arcname=dtu_svg_name)
+                os.remove(svg_path)  # Remove file to free disk space
                 
                 # Clear references and garbage collect
-                del dtu_fig_dict, dtu_fig, dtu_svg, dtu_plot_children
+                del dtu_fig_dict, dtu_fig, dtu_plot_children
                 gc.collect()
                 print("DTU plot processed and added to zip.")
         
-        # Stream the zip file for base64 encoding
-        with open(zip_path, 'rb') as f:
-            encoded_zip = base64.b64encode(f.read()).decode()
-            
-        # Clean up temp directory
-        shutil.rmtree(temp_dir)
-        
-        # One final garbage collection
-        gc.collect()
-        
-        # Return the zip file
-        return dict(
-            content=encoded_zip,
-            filename=zip_filename,
-            type="application/zip",
-            base64=True
-        )
+        # Use send_file to stream the zip instead of loading into memory
+        return send_file(zip_path)
             
     except Exception as e:
         import traceback
