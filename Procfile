@@ -1,1 +1,1 @@
-web: gunicorn wsgi:server
+web: python run.py
