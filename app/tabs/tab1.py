@@ -683,6 +683,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                 
 
         dge_plot = dcc.Graph(
+                    id='dge-graph', 
                     figure=volcano_plot_dge,
                     style={'height': f'{plot_height}px', 'width': '100%'}  # Responsive height
                 )
@@ -791,6 +792,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
 
 
         dte_plot = dcc.Graph(
+            id='dte-graph',
             figure=volcano_plot_dte,
             style={'height': f'{plot_height}px', 'width': '100%'}  # Responsive height
         )
@@ -951,6 +953,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
 
         # Now create the dcc.Graph with our modified figure
         dtu_plot = dcc.Graph(
+            id='dtu-graph',
             figure=volcano_plot_dtu,
             style={'height': f'{plot_height}px', 'width': '100%'}  # Responsive height
         )
@@ -982,14 +985,12 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
 @app.callback(
     Output("download-svg-tab1", "data"),
     [Input("download-button-tab1", "n_clicks")],
-    [State('differential-gene-expression-plot', 'children'),
-     State('differential-transcript-expression-plot', 'children'),
-     State('differential-transcript-usage-plot', 'children'),
-     State('search-input-tab1', 'value'),
-     State('group-comparison-dropdown-tab1', 'value'),
-     State('window-dimensions', 'data')]  # Keep window dimensions for consistency
+    [State('dge-graph', 'figure'),
+     State('dte-graph', 'figure'),
+     State('dtu-graph', 'figure'),
+     State('group-comparison-dropdown-tab1', 'value')]
 )
-def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, dtu_plot_children, selected_gene_name, group_comparison, window_dimensions):
+def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_comparison):
     from dash import dcc, no_update
     import tempfile
     import zipfile
@@ -1000,6 +1001,7 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
     import os    
     from dash.dependencies import Input, Output, State
     import plotly.graph_objs as go
+    import plotly.io as pio
         
     if n_clicks is None or not n_clicks:
         return no_update
@@ -1018,42 +1020,18 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
         zip_filename = f"Differential_analysis_plots_{comparison_text}.zip"
         zip_path = os.path.join(temp_dir, zip_filename)
         
-        # Helper function to extract the figure from plot children
-        def extract_figure(children):
-            # If children is a dcc.Graph component
-            if isinstance(children, dict) and children.get('type') == 'Graph' and 'props' in children and 'figure' in children['props']:
-                return children['props']['figure']
-            
-            # If children is a list (such as a Div containing dcc.Graph)
-            if isinstance(children, list):
-                for child in children:
-                    # If this child is a dcc.Graph
-                    if isinstance(child, dict) and child.get('type') == 'Graph' and 'props' in child and 'figure' in child['props']:
-                        return child['props']['figure']
-                    
-                    # If this child is a Div or other container that might contain a Graph
-                    if isinstance(child, dict) and 'props' in child and 'children' in child['props']:
-                        # Recursively search for the Graph
-                        nested_fig = extract_figure(child['props']['children'])
-                        if nested_fig:
-                            return nested_fig
-            
-            return None
-        
         print("WOOOW")
         
         # Create a zip file
         with zipfile.ZipFile(zip_path, 'w') as zipf:
+
             # Extract figures from the plot children if they exist
-            
-            # DGE Plot
-            dge_fig = extract_figure(dge_plot_children)
             if dge_fig:
                 dge_svg_name = f"Differential_gene_expression_{comparison_text}.svg"
                 
                 # Update layout for larger size and wider ratio
-                dge_fig = go.Figure(dge_fig)  # Create a copy to avoid modifying the original
-                dge_fig.update_layout(
+                fig = go.Figure(dge_fig)  # Create a copy to avoid modifying the original
+                fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
                     margin=dict(l=80, r=40, t=120, b=60),  # Increased top margin for title
@@ -1074,25 +1052,24 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                dge_svg = dge_fig.to_image(format="svg")
-                del dge_fig
-                gc.collect()
-                zipf.writestr(dge_svg_name, dge_svg)
+                # 1) write SVG straight to disk
+                tmp_svg = os.path.join(temp_dir, dge_svg_name)
+                fig.write_image(tmp_svg, format="svg")
+                zipf.write(tmp_svg, arcname=dge_svg_name)
                 print("DGE plot added to zip.")
-                del dge_svg
-                gc.collect()
+                os.remove(tmp_svg)
+                pio.kaleido.scope.shutdown()
 
             else:
                 print("No DGE figure found")
             
             # DTE Plot
-            dte_fig = extract_figure(dte_plot_children)
             if dte_fig:
                 dte_svg_name = f"Differential_transcript_expression_{comparison_text}.svg"
                 
                 # Update layout for larger size and wider ratio
-                dte_fig = go.Figure(dte_fig)  # Create a copy to avoid modifying the original
-                dte_fig.update_layout(
+                fig = go.Figure(dte_fig)  # Create a copy to avoid modifying the original
+                fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
                     margin=dict(l=80, r=40, t=120, b=60),  # Increased top margin for title
@@ -1113,24 +1090,23 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                dte_svg = dte_fig.to_image(format="svg")
-                del dte_fig
-                gc.collect()
-                zipf.writestr(dte_svg_name, dte_svg)
+                # 1) write SVG straight to disk
+                tmp_svg = os.path.join(temp_dir, dte_svg_name)
+                fig.write_image(tmp_svg, format="svg")
+                zipf.write(tmp_svg, arcname=dte_svg_name)
                 print("DTE plot added to zip.")
-                del dte_svg
-                gc.collect()
+                os.remove(tmp_svg)
+                pio.kaleido.scope.shutdown()
             else:
                 print("No DTE figure found")
             
             # DTU Plot
-            dtu_fig = extract_figure(dtu_plot_children)
             if dtu_fig:
                 dtu_svg_name = f"Differential_transcript_usage_{comparison_text}.svg"
                 
                 # Update layout for larger size and wider ratio
-                dtu_fig = go.Figure(dtu_fig)  # Create a copy to avoid modifying the original
-                dtu_fig.update_layout(
+                fig = go.Figure(dtu_fig)  # Create a copy to avoid modifying the original
+                fig.update_layout(
                     width=1200,  # Fixed width
                     height=800,  # Fixed height
                     margin=dict(l=80, r=40, t=120, b=60),  # Increased top margin for title
@@ -1151,13 +1127,13 @@ def download_plots_as_svg_tab1(n_clicks, dge_plot_children, dte_plot_children, d
                     )
                 )
                 
-                dtu_svg = dtu_fig.to_image(format="svg")
-                del dtu_fig
-                gc.collect()
-                zipf.writestr(dtu_svg_name, dtu_svg)
+                # 1) write SVG straight to disk
+                tmp_svg = os.path.join(temp_dir, dtu_svg_name)
+                fig.write_image(tmp_svg, format="svg")
+                zipf.write(tmp_svg, arcname=dtu_svg_name)
                 print("DTU plot added to zip.")
-                del dtu_svg
-                gc.collect()
+                os.remove(tmp_svg)
+                pio.kaleido.scope.shutdown()
             else:
                 print("No DTU figure found")
         
