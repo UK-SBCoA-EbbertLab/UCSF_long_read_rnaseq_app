@@ -41,6 +41,13 @@ def layout():
         # Hidden div to hold form label styles
         html.Div(id="tab1-form-labels", style={"display": "none"}),
         
+        # Hidden dummy graphs to prevent callback errors
+        html.Div([
+            dcc.Graph(id="dge-graph", figure={}, style={"display": "none"}),
+            dcc.Graph(id="dte-graph", figure={}, style={"display": "none"}),
+            dcc.Graph(id="dtu-graph", figure={}, style={"display": "none"})
+        ], style={"display": "none"}),
+        
         dbc.Card([
             dbc.CardBody([
                 # First row - 2 columns for quadrants 1 and 2
@@ -553,7 +560,11 @@ def update_effect_size_output(value):
 @app.callback(
     [Output('differential-gene-expression-plot', 'children'),
      Output('differential-transcript-expression-plot', 'children'),
-     Output('differential-transcript-usage-plot', 'children')],
+     Output('differential-transcript-usage-plot', 'children'),
+     # Add outputs for the hidden dummy graphs
+     Output('dge-graph', 'figure'),
+     Output('dte-graph', 'figure'),
+     Output('dtu-graph', 'figure')],
     [Input('deg-data-store-tab1', 'data'),
      Input('dte-data-store-tab1', 'data'),
      Input('dtu-data-store-tab1', 'data'),
@@ -957,7 +968,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
             style={'height': f'{plot_height}px', 'width': '100%'}  # Responsive height
         )
         
-        return dge_plot, dte_plot, dtu_plot
+        return dge_plot, dte_plot, dtu_plot, volcano_plot_dge, volcano_plot_dte, volcano_plot_dtu
         
     except Exception as e:
         import traceback
@@ -978,7 +989,9 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                 "border-radius": "6px"
             }
         )
-        return placeholder, placeholder, placeholder
+        # Return empty figures for the dummy graphs when there's an error
+        empty_fig = {}
+        return placeholder, placeholder, placeholder, empty_fig, empty_fig, empty_fig
 
 # Add download SVG callback
 @app.callback(
