@@ -8,9 +8,11 @@ def create_gene_search_dropdown(initial_value=None, initial_options=None, id='se
         placeholder="Enter gene name or ID...",
         clearable=True,
         searchable=True,
+        className="mb-2 taller-dropdown",
         options=initial_options or [],
         value=initial_value,
-        className="axis-dropdown",
+        optionHeight=60,
+        maxHeight=400,
         style={
             "background-color": "#ffffff",
             "color": "#333333",
