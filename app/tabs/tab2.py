@@ -393,14 +393,18 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, log_transf
     [State('density-plot-tab2', 'figure'),
      State('gene-level-plot-tab2', 'figure'),
      State('isoform-plot-store-tab2', 'data'),
-     State('search-input-tab2', 'value')]
+     State('search-input-tab2', 'value'),
+     State('matrix-table-dropdown-tab2', 'value')]
 )
-def download_plots_as_svg(n_clicks, density_fig, gene_level_fig, isoform_fig, selected_gene):
+def download_plots_as_svg(n_clicks, density_fig, gene_level_fig, isoform_fig, selected_gene, count_type):
 
     import plotly.io as pio
 
     if n_clicks is None or not n_clicks or selected_gene is None:
         return no_update
+    
+    # If no count type is selected, use total counts by default
+    count_type = count_type if count_type else 'total'
     
     try:
         # Get the gene name for the filename
@@ -486,7 +490,7 @@ def download_plots_as_svg(n_clicks, density_fig, gene_level_fig, isoform_fig, se
                 
             # Export the RNA isoform plot if available
             if isoform_fig:
-                isoform_svg_name = f"{gene_name}_RNA_isoform_plot.svg"
+                isoform_svg_name = f"{gene_name}_RNA_isoform_plot_{count_type}.svg"
                 try:
                     real_fig = go.Figure(isoform_fig)
                     isoform_svg = real_fig.to_image(format="svg").decode('utf-8')
@@ -506,7 +510,7 @@ def download_plots_as_svg(n_clicks, density_fig, gene_level_fig, isoform_fig, se
             else:
                 # Create a placeholder if isoform fig is not available
                 print("No isoform figure found, creating placeholder")
-                isoform_svg_name = f"{gene_name}_RNA_isoform_plot.svg"
+                isoform_svg_name = f"{gene_name}_RNA_isoform_plot_{count_type}.svg"
                 placeholder_fig = go.Figure()
                 placeholder_fig.add_annotation(
                     text=f"RNA Isoform Plot for {gene_name}",

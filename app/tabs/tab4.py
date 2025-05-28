@@ -850,13 +850,17 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, log_transf
      State('gene-level-plot-tab4', 'figure'),
      State('genotype-plot-store', 'data'),
      State('search-input-tab4', 'value'),
-     State('rsid-search-input', 'value')]
+     State('rsid-search-input', 'value'),
+     State('matrix-table-dropdown', 'value')]
 )
-def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_fig, selected_gene, selected_rsid):
+def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_fig, selected_gene, selected_rsid, count_type):
 
     import plotly.io as pio
     if n_clicks is None or not n_clicks or selected_gene is None or selected_rsid is None:
         return no_update
+    
+    # If no count type is selected, use total counts by default
+    count_type = count_type if count_type else 'total'
     
     try:
         # Get the gene name for the filename
@@ -947,7 +951,7 @@ def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_f
                 
             # Export the genotype plot
             if genotype_fig:
-                genotype_svg_name = f"{gene_name}_{rsid_name}_genotype_plot.svg"
+                genotype_svg_name = f"{gene_name}_{rsid_name}_genotype_plot_{count_type}.svg"
                 try:
                     real_fig = go.Figure(genotype_fig)
                     genotype_svg = real_fig.to_image(format="svg").decode('utf-8')
@@ -967,7 +971,7 @@ def download_plots_as_svg_tab4(n_clicks, density_fig, gene_level_fig, genotype_f
             else:
                 # Create a placeholder if genotype fig is not available
                 print("No genotype figure found, creating placeholder")
-                genotype_svg_name = f"{gene_name}_{rsid_name}_RNA_isoform_plot.svg"
+                genotype_svg_name = f"{gene_name}_{rsid_name}_RNA_isoform_plot_{count_type}.svg"
                 placeholder_fig = go.Figure()
                 placeholder_fig.add_annotation(
                     text=f"Genotype Plot for {gene_name} and {rsid_name}",

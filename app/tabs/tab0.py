@@ -42,6 +42,12 @@ def layout():
                className="mb-4 text-center",
                style={"font-weight": "300", "letter-spacing": "0.5px"}),
             
+            # Small informational text about screen size
+            html.P([
+                "Note: This website is optimized for desktop and tablet viewing. For the best experience, please use a larger screen rather than a mobile phone."
+            ], className="text-center text-muted small mb-4",
+               style={"font-size": "0.9rem", "font-style": "italic", "opacity": "0.8"}),
+            
             # Info cards replacing buttons
             dbc.Row([
                 dbc.Col([

@@ -171,7 +171,10 @@ def layout():
                                     dbc.Col([
                                         html.Label("Highlight Gene:", className="mb-1 tab1-form-label", 
                                                   id="tab1-gene-label"),
-                                        create_gene_search_dropdown(id="search-input-tab1")
+                                        create_gene_search_dropdown(id="search-input-tab1"),
+                                        html.Div("Genes/isoforms that didn't meet the inclusion threshold will not be highlighted.", 
+                                                className="slider-output text-center text-muted", 
+                                                style={"font-size": "18px", "margin-top": "4px"})
                                     ], width=6),
                                     
                                     # Right column - Download button
@@ -1000,9 +1003,10 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
     [State('dge-graph', 'figure'),
      State('dte-graph', 'figure'),
      State('dtu-graph', 'figure'),
-     State('group-comparison-dropdown-tab1', 'value')]
+     State('group-comparison-dropdown-tab1', 'value'),
+     State('matrix-type-dropdown-tab1', 'value')]
 )
-def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_comparison):
+def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_comparison, count_type):
     from dash import dcc, no_update
     import tempfile
     import zipfile
@@ -1017,6 +1021,9 @@ def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_compar
         
     if n_clicks is None or not n_clicks:
         return no_update
+    
+    # If no count type is selected, use total counts by default
+    count_type = count_type if count_type else 'total'
     
     try:
         # Prepare filename base on group comparison
@@ -1074,7 +1081,7 @@ def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_compar
             
             # DTE Plot
             if dte_fig:
-                dte_svg_name = f"Differential_transcript_expression_{comparison_text}.svg"
+                dte_svg_name = f"Differential_transcript_expression_{comparison_text}_{count_type}.svg"
                 
                 # Update layout for larger size and wider ratio
                 fig = go.Figure(dte_fig)  # Create a copy to avoid modifying the original
@@ -1111,7 +1118,7 @@ def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_compar
             
             # DTU Plot
             if dtu_fig:
-                dtu_svg_name = f"Differential_transcript_usage_{comparison_text}.svg"
+                dtu_svg_name = f"Differential_transcript_usage_{comparison_text}_{count_type}.svg"
                 
                 # Update layout for larger size and wider ratio
                 fig = go.Figure(dtu_fig)  # Create a copy to avoid modifying the original

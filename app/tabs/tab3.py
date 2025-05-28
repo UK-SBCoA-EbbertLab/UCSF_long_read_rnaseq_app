@@ -522,14 +522,18 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, trendline_
      State('isoform-plot-store-tab3', 'data'),
      State('search-input-tab3', 'value'),
      State('scatter-plot-tab3', 'figure'),
-     State('metadata-checklist-tab3', 'value')],
+     State('metadata-checklist-tab3', 'value'),
+     State('matrix-table-dropdown-tab3', 'value')],
 )
-def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fig, selected_gene, scatter_fig, selected_metadata):
+def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fig, selected_gene, scatter_fig, selected_metadata, count_type):
  
     import plotly.io as pio
 
     if n_clicks is None or not n_clicks or selected_gene is None:
         return no_update
+    
+    # If no count type is selected, use total counts by default
+    count_type = count_type if count_type else 'total'
     
     try:
         # Get the gene name for the filename
@@ -637,7 +641,7 @@ def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fi
                 
             # Export the Isoform Scatter plot if available
             if scatter_fig:
-                scatter_svg_name = f"{gene_name}_isoform_scatter_plot.svg"
+                scatter_svg_name = f"{gene_name}_isoform_scatter_plot_{count_type}.svg"
                 try:
                     real_fig = go.Figure(scatter_fig)
                     # Calculate number of selected metadata items for positioning adjustments
@@ -704,7 +708,7 @@ def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fi
 
             # Export the RNA isoform plot if available
             if isoform_fig:
-                isoform_svg_name = f"{gene_name}_RNA_isoform_structure_plot.svg"
+                isoform_svg_name = f"{gene_name}_RNA_isoform_structure_plot_{count_type}.svg"
                 try:
                     real_fig = go.Figure(isoform_fig)
                     isoform_svg = real_fig.to_image(format="svg").decode('utf-8')
@@ -722,7 +726,7 @@ def download_plots_as_svg_tab3(n_clicks, density_fig, gene_level_fig, isoform_fi
                     zipf.writestr(isoform_svg_name, placeholder_svg)
             else:
                 # Create a placeholder if isoform fig is not available
-                isoform_svg_name = f"{gene_name}_RNA_isoform_plot.svg"
+                isoform_svg_name = f"{gene_name}_RNA_isoform_plot_{count_type}.svg"
                 placeholder_fig = go.Figure()
                 placeholder_fig.add_annotation(
                     text=f"RNA Isoform Plot for {gene_name}",
