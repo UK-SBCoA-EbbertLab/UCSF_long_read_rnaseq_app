@@ -477,7 +477,7 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
         
         # Define annotation colormap (consistent with tab2)
         annotation_hue_values = ["protein_coding", "retained_intron", "protein_coding_CDS_not_defined", "nonsense_mediated_decay",
-                                 "novel_low_confidence", "novel_high_confidence", "lncRNA", "other"]
+                                 "new_low_confidence", "new_high_confidence", "lncRNA", "other"]
         annotation_colormap = {val: color for val, color in zip(annotation_hue_values, get_n_colors(len(annotation_hue_values), 'Plotly'))}
 
         # Update the trace creation to use the correct columns

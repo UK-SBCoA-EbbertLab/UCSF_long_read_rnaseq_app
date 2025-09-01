@@ -1087,7 +1087,7 @@ def update_gene_plot_tab2(selected_table, selected_gene, selected_metadata, log_
             expression_columns = [count_col, tmm_col, abundance_col]
 
         hue_values = ["protein_coding", "retained_intron", "protein_coding_CDS_not_defined", "nonsense_mediated_decay",
-                              "novel_low_confidence", "novel_high_confidence", "lncRNA", "other"]
+                              "new_low_confidence", "new_high_confidence", "lncRNA", "other"]
         
         colormap = {val: color for val, color in zip(hue_values, get_n_colors(len(hue_values), 'Plotly'))}
 
