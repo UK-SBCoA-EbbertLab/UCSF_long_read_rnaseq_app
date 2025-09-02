@@ -879,11 +879,9 @@ def layout():
                                         id="correlation-var-tab3",
                                         options=[
                                             {"label": "Age at Death", "value": "expired_age"},
-                                            {"label": "Age at Dementia Diagnosis", "value": "demential_age"},
                                             {"label": "All Reads", "value": "all_reads"},
                                             {"label": "Astrocyte Proportion", "value": "astrocyte_proportion"},
                                             {"label": "Brain Weight", "value": "brain_weight_grams"},
-                                            {"label": "Last MMSE Test Score", "value": "last_mmse_test_score"},
                                             {"label": "Mapping Rate", "value": "mapping_rate_(%)"},
                                             {"label": "Mapping Rate (MAPQ ≥ 10)", "value": "mapping_rate_-_mapq_>=_10_(%)"},
                                             {"label": "Median Read Length", "value": "median_read_length_bam"},
@@ -899,8 +897,7 @@ def layout():
                                             {"label": "TIN Median", "value": "tin_median"},
                                             {"label": "Total Plaque Density", "value": "plaquetotal"},
                                             {"label": "Total Tangle Density", "value": "tangletotal"},
-                                            {"label": "Trimmed & Filtered Reads", "value": "trimmed_&_processed_pass_reads"},
-                                            {"label": "Years Living with Dementia", "value": "dementia_years"}
+                                            {"label": "Trimmed & Filtered Reads", "value": "trimmed_&_processed_pass_reads"}
                                         ],
                                         value="expired_age",
                                         clearable=False,
@@ -1717,13 +1714,10 @@ def update_gene_plot_tab3(count_type, selected_gene, selected_metadata, trendlin
             "oligodendrocyte_proportion": "Oligodendrocyte Proportion",
             "neuronal_proportion": "Neuronal Proportion",
             "microglia-pvm_proportion": "Microglia-PVM Proportion",
-            "last_mmse_test_score": "MMSE Score",
             "plaquef": "Plaque Density - Frontal Cortex",
             "plaquetotal": "Total Plaque Density",
             "tanglef": "Tangle Density - Frontal Cortex",
             "tangletotal": "Total Tangle Density",
-            "dementia_years": "Years with Dementia",
-            "demential_age": "Age at Dementia Diagnosis (Years)"
         }
         x_label = var_labels.get(correlation_var, correlation_var)
         
