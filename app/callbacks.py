@@ -17,8 +17,12 @@ from dash import ClientsideFunction
 import plotly.graph_objects as go
 
 # Callback to update the content based on the active tab
-@app.callback(Output("content", "children"), [Input("tabs", "active_tab")])
-def render_content(tab):
+@app.callback(
+    Output("content", "children"), 
+    [Input("tabs", "active_tab"),
+     Input("active-tab", "data")]
+)
+def render_content(tab, active_tab_data):
     # Return the layout corresponding to the selected tab, or a default message if not found.
     return content_layout.get(tab, "Tab not found")
 

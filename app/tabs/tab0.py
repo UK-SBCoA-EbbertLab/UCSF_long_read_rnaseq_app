@@ -1,7 +1,7 @@
 # File: app/tabs/tab0.py
 # Defines the layout for the Home tab
 
-from dash import html, dcc, Input, Output, callback, State, callback_context, no_update
+from dash import html, dcc, Input, Output, callback, State, callback_context, no_update, ALL
 import dash
 import dash_bootstrap_components as dbc
 import base64
@@ -55,35 +55,40 @@ def layout():
                         html.H4("Differential Expression", className="text-center"),
                         html.P("Explore differential expression/usage between conditions", 
                                className="text-center text-muted small")
-                    ], className="p-3 border rounded shadow-sm h-100")
+                    ], id="de-card", className="p-3 border rounded shadow-sm h-100", 
+                       n_clicks=0)
                 ], width=12, md=4, lg=2, className="mb-3 mx-1"),
                 dbc.Col([
                     html.Div([
                         html.H4("Isoform Explorer", className="text-center"),
                         html.P("Visualize RNA isoforms and their expression patterns.", 
                                className="text-center text-muted small")
-                    ], className="p-3 border rounded shadow-sm h-100")
+                    ], id="ie-card", className="p-3 border rounded shadow-sm h-100",
+                       n_clicks=0)
                 ], width=12, md=4, lg=2, className="mb-3 mx-1"),
                 dbc.Col([
                     html.Div([
                         html.H4("Isoform Correlations", className="text-center"),
                         html.P("Visualize correlations between RNA isoforms and continous variables.", 
                                className="text-center text-muted small")
-                    ], className="p-3 border rounded shadow-sm h-100")
+                    ], id="ic-card", className="p-3 border rounded shadow-sm h-100",
+                       n_clicks=0)
                 ], width=12, md=4, lg=2, className="mb-3 mx-1"),
                 dbc.Col([
                     html.Div([
                         html.H4("QTL Explorer", className="text-center"),
                         html.P("Examine quantitative trait loci at the gene and RNA isoform level.", 
                                className="text-center text-muted small")
-                    ], className="p-3 border rounded shadow-sm h-100")
+                    ], id="qtl-card", className="p-3 border rounded shadow-sm h-100",
+                       n_clicks=0)
                 ], width=12, md=4, lg=2, className="mb-3 mx-1"),
                 dbc.Col([
                     html.Div([
                         html.H4("Download Data", className="text-center"),
                         html.P("Access and download datasets from our research.", 
                                className="text-center text-muted small")
-                    ], className="p-3 border rounded shadow-sm h-100")
+                    ], id="download-card", className="p-3 border rounded shadow-sm h-100",
+                       n_clicks=0)
                 ], width=12, md=4, lg=2, className="mb-3 mx-1"),
             ], id="tab0-info-row", className="mb-5 px-4 justify-content-center"),
             
@@ -205,3 +210,36 @@ def update_tab0_responsiveness(dimensions):
         img_style, 
         manuscript_style
     ) 
+
+# Callback to handle card clicks and navigate to corresponding tabs
+@callback(
+    Output("tabs", "active_tab"),
+    [Input("de-card", "n_clicks"),
+     Input("ie-card", "n_clicks"),
+     Input("ic-card", "n_clicks"),
+     Input("qtl-card", "n_clicks"),
+     Input("download-card", "n_clicks")]
+)
+def handle_card_clicks(de_clicks, ie_clicks, ic_clicks, qtl_clicks, download_clicks):
+    ctx = callback_context
+    if not ctx.triggered:
+        return no_update
+    
+    # Only proceed if there was an actual click (n_clicks > 0)
+    if not any([de_clicks, ie_clicks, ic_clicks, qtl_clicks, download_clicks]):
+        return no_update
+    
+    # Get the ID of the clicked component
+    clicked_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    
+    # Map card IDs to tab IDs
+    card_to_tab = {
+        "de-card": "tab-1",      # Differential Expression
+        "ie-card": "tab-2",      # Isoform Explorer
+        "ic-card": "tab-3",      # Isoform Correlations
+        "qtl-card": "tab-4",     # QTL Explorer
+        "download-card": "tab-5" # Download Data
+    }
+    
+    # Return the corresponding tab ID
+    return card_to_tab.get(clicked_id, no_update) 
