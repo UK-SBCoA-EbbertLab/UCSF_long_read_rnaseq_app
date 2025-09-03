@@ -69,7 +69,7 @@ def layout():
                                 html.Span("Quantitative Trait Loci Analysis Results and Genotyping Data"),
                                 html.Br(),
                                 html.Span(
-                                    "(Larger Files: 8,3 GB Zipped Directory, 60+ GB Unzipped)",
+                                    "(Larger Files: 8.3 GB Zipped Directory, 60+ GB Unzipped)",
                                     style={"font-size": "0.85em", "opacity": "0.85"}
                                 )
                             ],
