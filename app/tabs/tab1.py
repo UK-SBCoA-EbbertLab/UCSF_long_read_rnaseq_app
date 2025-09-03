@@ -602,7 +602,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
     subtitle_size = base_font_size * 1.125  # 18px at normal size
     axis_label_size = base_font_size
     tick_label_size = base_font_size * 0.875
-    legend_label_size = 1
+    legend_label_size = 16 * scaling_factor
     
     # Calculate responsive height for plots
     plot_height = int(window_dimensions['height'] * 0.785)  # Using 0.7x window height
@@ -644,6 +644,26 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                 snp=None
             )
 
+        # Update trace names for proper legend
+        for trace in volcano_plot_dge.data:
+            if trace.marker and hasattr(trace.marker, 'color'):
+                if isinstance(trace.marker.color, list):
+                    # Check if this trace contains red points (DEGs)
+                    if any(color == "#FF6692" for color in trace.marker.color):
+                        trace.name = "DEGs"
+                        trace.showlegend = True
+                    elif any(color == "#19D3F3" for color in trace.marker.color):
+                        trace.name = "Not DEGs"
+                        trace.showlegend = True
+                else:
+                    # Single color trace
+                    if trace.marker.color == "#FF6692":
+                        trace.name = "DEGs"
+                        trace.showlegend = True
+                    elif trace.marker.color == "#19D3F3":
+                        trace.name = "Not DEGs"
+                        trace.showlegend = True
+
         if selected_gene_name is not None:
             show_legend = True
             gene_lookup = f"<br>GENE: {selected_gene_name}"
@@ -683,7 +703,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                     text=texts_sel,
                     mode='markers',
                     marker=dict(color="#2CA02C", size=max(14, int(18 * scaling_factor))),  # Responsive highlighted point size
-                    name="Highlighted Gene",
+                    name=selected_gene_name,
                     showlegend=show_legend,
                     legendgroup='Highlighted Gene'
                 ))
@@ -716,8 +736,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                 itemsizing='constant',
                 traceorder='normal',
                 font=dict(
-                    size=legend_label_size,
-                    color='rgba(0,0,0,0)'  # Make text transparent
+                    size=legend_label_size
                 ),
                 borderwidth=0
             ),
@@ -752,6 +771,26 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                 annotation='transcript_id',
                 snp=None
             )
+        
+        # Update trace names for proper legend
+        for trace in volcano_plot_dte.data:
+            if trace.marker and hasattr(trace.marker, 'color'):
+                if isinstance(trace.marker.color, list):
+                    # Check if this trace contains red points (DETs)
+                    if any(color == "#FF6692" for color in trace.marker.color):
+                        trace.name = "DETs"
+                        trace.showlegend = True
+                    elif any(color == "#19D3F3" for color in trace.marker.color):
+                        trace.name = "Not DETs"
+                        trace.showlegend = True
+                else:
+                    # Single color trace
+                    if trace.marker.color == "#FF6692":
+                        trace.name = "DETs"
+                        trace.showlegend = True
+                    elif trace.marker.color == "#19D3F3":
+                        trace.name = "Not DETs"
+                        trace.showlegend = True
         
 
         if selected_gene_name is not None:
@@ -791,7 +830,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                     x=xs_sel,
                     y=ys_sel,
                     text=texts_sel,
-                    name="Highlighted Gene",
+                    name=f"{selected_gene_name} isoforms",
                     mode='markers',
                     legendgroup='Highlighted Gene',
                     marker=dict(color="#2CA02C", size=max(14, int(18 * scaling_factor))),  # Responsive highlighted point size
@@ -826,8 +865,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                 itemsizing='constant',
                 traceorder='normal',
                 font=dict(
-                    size=legend_label_size,
-                    color='rgba(0,0,0,0)'  # Make text transparent
+                    size=legend_label_size
                 ),
                 borderwidth=0
             ),
@@ -863,6 +901,26 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
             annotation='transcript_id',
             snp=None
         )
+
+        # Update trace names for proper legend
+        for trace in volcano_plot_dtu.data:
+            if trace.marker and hasattr(trace.marker, 'color'):
+                if isinstance(trace.marker.color, list):
+                    # Check if this trace contains red points (DUTs)
+                    if any(color == "#FF6692" for color in trace.marker.color):
+                        trace.name = "DUTs"
+                        trace.showlegend = True
+                    elif any(color == "#19D3F3" for color in trace.marker.color):
+                        trace.name = "Not DUTs"
+                        trace.showlegend = True
+                else:
+                    # Single color trace
+                    if trace.marker.color == "#FF6692":
+                        trace.name = "DUTs"
+                        trace.showlegend = True
+                    elif trace.marker.color == "#19D3F3":
+                        trace.name = "Not DUTs"
+                        trace.showlegend = True
 
         if selected_gene_name is not None:
         
@@ -905,7 +963,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                     text=texts_sel,
                     mode='markers',
                     marker=dict(color="#2CA02C", size=max(14, int(18 * scaling_factor))),  # Responsive highlighted point size
-                    name="Highlighted Gene",
+                    name=f"{selected_gene_name} isoforms",
                     showlegend=show_legend,
                     legendgroup='Highlighted Gene'
                 ))
@@ -939,8 +997,7 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
                 itemsizing='constant',
                 traceorder='normal',
                 font=dict(
-                    size=legend_label_size,
-                    color='rgba(0,0,0,0)'  # Make text transparent
+                    size=legend_label_size
                 ),
                 borderwidth=0
             ),
