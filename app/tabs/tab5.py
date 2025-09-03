@@ -28,7 +28,7 @@ def layout():
                                 className="w-100 py-3 mb-3",
                                 style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem"}
                             ),
-                            href="https://zenodo.org/records/17009393/files/metadata.zip?download=1",
+                            href="https://zenodo.org/records/17028555/files/metadata.tsv?download=1",
                             target="_blank"
                         ),
                     ], className="mb-3"),
@@ -43,7 +43,7 @@ def layout():
                                 className="w-100 py-3 mb-3",
                                 style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem"}
                             ),
-                            href="https://zenodo.org/records/17009393/files/differential_expression_results.zip?download=1",
+                            href="https://zenodo.org/records/17028555/files/differential_expression_results.zip?download=1",
                             target="_blank"
                         ),
                     ], className="mb-3"),
@@ -58,7 +58,7 @@ def layout():
                                 className="w-100 py-3 mb-3",
                                 style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem"}
                             ),
-                            href="https://zenodo.org/records/17009393/files/counts_matrices_and_annotations.zip?download=1",
+                            href="https://zenodo.org/records/17028555/files/counts_matrices_and_annotations.zip?download=1",
                             target="_blank"
                         ),
                     ], className="mb-3"),
@@ -79,7 +79,7 @@ def layout():
                                 className="w-100 py-3 mb-3",
                                 style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem", "white-space": "normal", "text-align": "center"}
                             ),
-                            href="https://zenodo.org/records/17009393/files/QTL_results.zip?download=1",
+                            href="https://zenodo.org/records/17028555/files/QTL_results.zip?download=1",
                             target="_blank"
                         ),
                     ], className="mb-3"),
