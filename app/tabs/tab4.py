@@ -1148,7 +1148,7 @@ def layout():
                                 create_checklist(
                                     id="metadata-checklist",
                                     options=[
-                                        {"label": "Braak Stage", "value": "braak_tangle_score"},
+                                        {"label": "Braak Stage", "value": "braak_score"},
                                         {"label": "Sex", "value": "sex"},
                                         {"label": "AD Status", "value": "ebbert_ad_status"},
                                         {"label": "APOE Genotype", "value": "apoe"}

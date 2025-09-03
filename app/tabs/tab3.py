@@ -795,7 +795,7 @@ def layout():
             dcc.Checklist(
                 id='metadata-checklist-tab3',
                 options=[
-                    {"label": "Braak Stage", "value": "braak_tangle_score"},
+                    {"label": "Braak Stage", "value": "braak_score"},
                     {"label": "Sex", "value": "sex"},
                     {"label": "AD Status", "value": "ebbert_ad_status"},
                     {"label": "APOE Genotype", "value": "apoe"}
@@ -1008,7 +1008,7 @@ def layout():
                                 create_checklist(
                                     id="metadata-checklist-tab3",
                                     options=[
-                                        {"label": "Braak Stage", "value": "braak_tangle_score"},
+                                        {"label": "Braak Stage", "value": "braak_score"},
                                         {"label": "Sex", "value": "sex"},
                                         {"label": "AD Status", "value": "ebbert_ad_status"},
                                         {"label": "APOE Genotype", "value": "apoe"}
@@ -1400,7 +1400,7 @@ def limit_metadata_selections(selected_values):
         return []
 
     last_selected = selected_values[-1]
-    restricted_options = {'braak_tangle_score', 'apoe'}
+    restricted_options = {'braak_score', 'apoe'}
     # allowed_pair_options = {'sex', 'ebbert_ad_status'} # Only non-restricted
 
     # Case 1: Last selected item is restricted
