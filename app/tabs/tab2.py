@@ -71,6 +71,11 @@ density_fig.update_layout(
 last_valid_options = []
 last_search_value = None  # Store the last search value
 
+# Default APP gene information
+DEFAULT_APP_GENE_INDEX = 9782
+DEFAULT_APP_GENE_NAME = "APP"
+DEFAULT_APP_GENE_ID = "ENSG00000142192"
+
 @app.callback(
     Output('density-plot-tab2', 'figure'),
     [Input('search-input-tab2', 'value'),
@@ -108,7 +113,8 @@ def update_density_plot(selected_gene, options, window_dimensions):
     )
 
     if selected_gene is None:
-        return fig
+        # Set default to APP gene
+        selected_gene = DEFAULT_APP_GENE_INDEX
 
     try:
         gene_name = None
@@ -199,6 +205,11 @@ def update_search_options(search_value, selected_value):
                     }]
         
         return last_valid_options
+    
+    # If no search value and no selected value, return APP gene as default
+    if not search_value and not selected_value:
+        # Don't override if there's already an initial value set
+        return last_valid_options
         
     # If no search value or too short, return latest options
     if not search_value or len(search_value) < 2:
@@ -226,7 +237,8 @@ def update_search_options(search_value, selected_value):
 )
 def update_gene_level_plot(selected_gene, options, selected_metadata, log_transform, plot_style, count_type, window_dimensions):
     if selected_gene is None:
-        return go.Figure()
+        # Set default to APP gene
+        selected_gene = DEFAULT_APP_GENE_INDEX
 
     # If no count type is selected, use total counts by default
     count_type = count_type if count_type else 'total'
@@ -604,7 +616,14 @@ def layout():
                 dbc.Row([
                     dbc.Col([
                         create_section_header("Search Gene:"),
-                        create_gene_search_dropdown(id="search-input-tab2")
+                        create_gene_search_dropdown(
+                            id="search-input-tab2",
+                            initial_value=DEFAULT_APP_GENE_INDEX,
+                            initial_options=[{
+                                'label': f"{DEFAULT_APP_GENE_NAME} ({DEFAULT_APP_GENE_ID})",
+                                'value': DEFAULT_APP_GENE_INDEX
+                            }]
+                        )
                     ], width=3, id="tab2-search-col"),
                     dbc.Col([
                         create_section_header("Data Matrix:"),
@@ -930,22 +949,9 @@ def update_tab2_responsiveness(dimensions):
      Input('isoform-range-slider-tab2', 'value')]
 )
 def update_gene_plot_tab2(selected_table, selected_gene, selected_metadata, log_transform, plot_style, window_dimensions, isoform_range):
-    # Return message if no gene is selected
+    # Set default to APP gene if no gene is selected
     if selected_gene is None:
-        return html.Div(
-            html.P("Please select a gene to display data", 
-                  style={"color": "#666666", "margin": 0}),
-            style={
-                "height": "100%",
-                "width": "100%",
-                "display": "flex",
-                "justify-content": "center",
-                "align-items": "center",
-                "min-height": "500px",
-                "background-color": "#f8f9fa",
-                "border-radius": "6px"
-            }
-        ), None
+        selected_gene = DEFAULT_APP_GENE_INDEX
         
     # If no count type is selected, use total counts by default
     count_type = selected_table if selected_table else 'total'
@@ -1217,9 +1223,8 @@ def update_gene_plot_tab2(selected_table, selected_gene, selected_metadata, log_
 )
 def update_slider_range_tab2(selected_gene):
     if selected_gene is None:
-        # Default range when no gene is selected
-        marks = {i: str(i) for i in range(1, 11)}
-        return 10, marks, [1, 5]
+        # Use APP gene as default
+        selected_gene = DEFAULT_APP_GENE_INDEX
 
     try:
         # Query to get the number of transcripts for this gene

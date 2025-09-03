@@ -75,6 +75,13 @@ last_rsid_search_value = None  # Store the last search value
 last_valid_gene_options = []
 last_gene_search_value = None
 
+# Default WNT3 gene and rs9904865 RSID information
+DEFAULT_WNT3_GENE_INDEX = 5095
+DEFAULT_WNT3_GENE_NAME = "WNT3"
+DEFAULT_WNT3_GENE_ID = "ENSG00000108379"
+DEFAULT_RSID_INDEX = 4386727
+DEFAULT_RSID = "rs9904865"
+
 @app.callback(
     Output('rsid-search-input', 'options'),
     [Input('rsid-search-input', 'search_value'),
@@ -94,8 +101,8 @@ def update_rsid_search_options(search_value, selected_value):
             try:
                 rsid_result = duck_conn.execute("""
                     SELECT rsid 
-                    FROM genotyping 
-                    WHERE rsid = ?
+                    FROM rsid_index_table 
+                    WHERE rsid_index = ?
                     LIMIT 1
                 """, [selected_value]).fetchone()
                 
@@ -104,17 +111,22 @@ def update_rsid_search_options(search_value, selected_value):
                     rsid = rsid_result[0]
                     option = {
                         'label': rsid,
-                        'value': rsid
+                        'value': selected_value  # Keep the rsid_index as value
                     }
                     last_valid_rsid_options = [option]  # Just show the current selection
             except Exception as e:
                 # If we can't get the details, just use the raw ID
                 if selected_value:
                     last_valid_rsid_options = [{
-                        'label': selected_value,
+                        'label': str(selected_value),
                         'value': selected_value
                     }]
         
+        return last_valid_rsid_options
+    
+    # If no search value and no selected value, return rs9904865 as default
+    if not search_value and not selected_value:
+        # Don't override if there's already an initial value set
         return last_valid_rsid_options
         
     # If no search value or too short, return latest options
@@ -174,6 +186,11 @@ def update_gene_search_options_tab4(search_value, selected_value):
                     }]
         
         return last_valid_gene_options
+    
+    # If no search value and no selected value, return WNT3 gene as default
+    if not search_value and not selected_value:
+        # Don't override if there's already an initial value set
+        return last_valid_gene_options
         
     # If no search value or too short, return latest options
     if not search_value or len(search_value) < 2:
@@ -226,7 +243,8 @@ def update_density_plot(selected_gene, options, window_dimensions):
     )
 
     if not selected_gene:
-        return fig
+        # Set default to WNT3 gene
+        selected_gene = DEFAULT_WNT3_GENE_INDEX
 
     try:
         gene_name = None
@@ -287,23 +305,11 @@ def update_density_plot(selected_gene, options, window_dimensions):
      Input('isoform-range-slider', 'value')]
 )
 def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected_metadata, log_transform, plot_style, window_dimensions, isoform_range):
-    # Explicitly check for None instead of truthiness
-    if selected_rsid is None or selected_gene is None:
-        # Return an empty figure wrapped in dcc.Graph component with tab2-like styling
-        return html.Div(
-            html.P("Please select a gene and RSID to display data", 
-                  style={"color": "#666666", "margin": 0}),
-            style={
-                "height": "100%",
-                "width": "100%",
-                "display": "flex",
-                "justify-content": "center",
-                "align-items": "center",
-                "min-height": "500px",
-                "background-color": "#f8f9fa",
-                "border-radius": "6px"
-            }
-        ), None
+    # Set defaults if no gene or RSID is selected
+    if selected_gene is None:
+        selected_gene = DEFAULT_WNT3_GENE_INDEX
+    if selected_rsid is None:
+        selected_rsid = DEFAULT_RSID_INDEX
     
     # Add default window dimensions check
     if not window_dimensions:
@@ -665,8 +671,12 @@ def update_rsid_genotype_plot(selected_rsid, count_type, selected_gene, selected
      Input('window-dimensions', 'data')]
 )
 def update_gene_level_plot(selected_gene, options, selected_metadata, log_transform, plot_style, selected_rsid, window_dimensions):
-    if selected_gene is None or selected_rsid is None:
-        return go.Figure()
+    if selected_gene is None:
+        # Set default to WNT3 gene
+        selected_gene = DEFAULT_WNT3_GENE_INDEX
+    if selected_rsid is None:
+        # Set default to rs9904865
+        selected_rsid = DEFAULT_RSID_INDEX
 
     # Default window dimensions if not available yet
     if not window_dimensions:
@@ -1062,11 +1072,24 @@ def layout():
                 dbc.Row([
                     dbc.Col([
                         create_section_header("Search Gene:"),
-                        create_gene_search_dropdown(id='search-input-tab4')
+                        create_gene_search_dropdown(
+                            id='search-input-tab4',
+                            initial_value=DEFAULT_WNT3_GENE_INDEX,
+                            initial_options=[{
+                                'label': f"{DEFAULT_WNT3_GENE_NAME} ({DEFAULT_WNT3_GENE_ID})",
+                                'value': DEFAULT_WNT3_GENE_INDEX
+                            }]
+                        )
                     ], width=2, id="tab4-gene-search-col"),
                     dbc.Col([
                         create_section_header("Search RSID:"),
-                        create_rsid_search_dropdown()
+                        create_rsid_search_dropdown(
+                            initial_value=DEFAULT_RSID_INDEX,
+                            initial_options=[{
+                                'label': DEFAULT_RSID,
+                                'value': DEFAULT_RSID_INDEX
+                            }]
+                        )
                     ], width=2, id="tab4-rsid-search-col"),
                     dbc.Col([
                         create_section_header("Data Matrix:"),
@@ -1392,9 +1415,8 @@ def update_tab4_responsiveness(dimensions):
 )
 def update_slider_range_tab4(selected_gene):
     if not selected_gene:
-        # Default range when no gene is selected
-        marks = {i: str(i) for i in range(1, 11)}
-        return 10, marks, [1, 5]
+        # Use WNT3 gene as default
+        selected_gene = DEFAULT_WNT3_GENE_INDEX
 
     try:
         # Query to get the number of transcripts for this gene

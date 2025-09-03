@@ -74,6 +74,11 @@ density_fig.update_layout(
 last_valid_options = []
 last_search_value = None  # Store the last search value
 
+# Default APP gene information
+DEFAULT_APP_GENE_INDEX = 9782
+DEFAULT_APP_GENE_NAME = "APP"
+DEFAULT_APP_GENE_ID = "ENSG00000142192"
+
 @app.callback(
     Output('density-plot-tab3', 'figure'),
     [Input('search-input-tab3', 'value'),
@@ -112,7 +117,8 @@ def update_density_plot(selected_gene, options, window_dimensions):
     )
 
     if not selected_gene:
-        return fig # Return scaled base figure
+        # Set default to APP gene
+        selected_gene = DEFAULT_APP_GENE_INDEX
 
     try:
         gene_name = None
@@ -207,6 +213,11 @@ def update_search_options(search_value, selected_value):
                     }]
         
         return last_valid_options
+    
+    # If no search value and no selected value, return APP gene as default
+    if not search_value and not selected_value:
+        # Don't override if there's already an initial value set
+        return last_valid_options
         
     # If no search value or too short, return latest options
     if not search_value or len(search_value) < 2:
@@ -234,7 +245,8 @@ def update_search_options(search_value, selected_value):
 )
 def update_gene_level_plot(selected_gene, options, selected_metadata, trendline_type, correlation_var, window_dimensions, correlation_type):
     if selected_gene is None:
-        return go.Figure()
+        # Set default to APP gene
+        selected_gene = DEFAULT_APP_GENE_INDEX
         
     try:
         # Get the gene name from the options
@@ -827,7 +839,14 @@ def layout():
                     html.Tr([
                         html.Td([
                             create_section_header("Search Gene:"),
-                            create_gene_search_dropdown(id="search-input-tab3")
+                            create_gene_search_dropdown(
+                            id="search-input-tab3",
+                            initial_value=DEFAULT_APP_GENE_INDEX,
+                            initial_options=[{
+                                'label': f"{DEFAULT_APP_GENE_NAME} ({DEFAULT_APP_GENE_ID})",
+                                'value': DEFAULT_APP_GENE_INDEX
+                            }]
+                        )
                         ], id="tab3-gene-search-col", style={"width": "33.33%", "padding": "0 2px"}),
                         html.Td([
                             create_section_header("Data Matrix:"),
@@ -1298,9 +1317,8 @@ def update_slider_range_tab3(selected_gene, current_range):
 
     # --- Initial Setup and Max Value Calculation ---
     if not selected_gene:
-        marks = {i: str(i) for i in range(1, 11)}
-        previous_range[:] = [1, 3] # Reset previous range to 1-3
-        return 10, marks, [1, 3]
+        # Use APP gene as default
+        selected_gene = DEFAULT_APP_GENE_INDEX
 
     try:
         # Query to get the number of transcripts for this gene
@@ -1449,24 +1467,9 @@ def limit_metadata_selections(selected_values):
 )
 def update_gene_plot_tab3(count_type, selected_gene, selected_metadata, trendline_type, window_dimensions, isoform_range, correlation_var, y_axis_metric, correlation_type):
     
-    # Return message if no gene is selected
+    # Set default to APP gene if no gene is selected
     if selected_gene is None:
-        # Create placeholder figures similar to Tab 2
-        placeholder_style = {
-            "xaxis": {"visible": False},
-            "yaxis": {"visible": False},
-            "plot_bgcolor": "#f8f9fa", # Light grey background
-            "annotations": [{
-                "text": "Please select a gene to display data",
-                "xref": "paper",
-                "yref": "paper",
-                "showarrow": False,
-                "font": {"size": 16, "color": "#666666"}
-            }]
-        }
-        placeholder_fig_rnapy = go.Figure(layout=placeholder_style)
-        placeholder_fig_scatter = go.Figure(layout=placeholder_style)
-        return placeholder_fig_rnapy, placeholder_fig_scatter, None
+        selected_gene = DEFAULT_APP_GENE_INDEX
 
     try:
         # If no count type is selected, use total counts by default
