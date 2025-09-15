@@ -339,7 +339,9 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, trendline_
             "plaquef": "Plaque Density - Frontal Cortex",
             "plaquetotal": "Total Plaque Density",
             "tanglef": "Tangle Density - Frontal Cortex",
-            "tangletotal": "Total Tangle Density"
+            "tangletotal": "Total Tangle Density",
+            "demential_age": "Dementia Onset Age (Years)",
+            "dementia_years": "Years Living with Dementia (Years)"
         }
         x_label = var_labels.get(correlation_var, correlation_var)
 
@@ -916,7 +918,9 @@ def layout():
                                             {"label": "TIN Median", "value": "tin_median"},
                                             {"label": "Total Plaque Density", "value": "plaquetotal"},
                                             {"label": "Total Tangle Density", "value": "tangletotal"},
-                                            {"label": "Trimmed & Filtered Reads", "value": "trimmed_&_processed_pass_reads"}
+                                            {"label": "Trimmed & Filtered Reads", "value": "trimmed_&_processed_pass_reads"},
+                                            {"label": "Dementia Onset Age (Years)", "value": "demential_age"},
+                                            {"label": "Years Living with Dementia (Years)", "value": "dementia_years"}
                                         ],
                                         value="expired_age",
                                         clearable=False,
@@ -1723,6 +1727,8 @@ def update_gene_plot_tab3(count_type, selected_gene, selected_metadata, trendlin
             "plaquetotal": "Total Plaque Density",
             "tanglef": "Tangle Density - Frontal Cortex",
             "tangletotal": "Total Tangle Density",
+            "demential_age": "Dementia Onset Age (Years)",
+            "dementia_years": "Years Living with Dementia (Years)"
         }
         x_label = var_labels.get(correlation_var, correlation_var)
         
