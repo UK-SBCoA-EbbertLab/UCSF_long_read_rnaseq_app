@@ -152,11 +152,12 @@ def layout():
                                             step=0.1,
                                             marks={
                                                 0.1: {'label': '0.1', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
+                                                0.38: {'label': '0.38', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
                                                 0.5: {'label': '0.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
                                                 1.0: {'label': '1.0', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
                                                 1.5: {'label': '1.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}}
                                             },
-                                            value=0.5,
+                                            value=0.38,
                                             className="mb-1",
                                             tooltip={"placement": "bottom", "always_visible": True, "style": {"font-size": "18px"}},
                                             updatemode='mouseup'
@@ -1266,6 +1267,7 @@ def update_effect_size_slider_marks(dimensions):
         # Default mark style
         return {
             0.1: {'label': '0.1', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
+            0.38: {'label': '0.38', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
             0.5: {'label': '0.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
             1.0: {'label': '1.0', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
             1.5: {'label': '1.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}}
@@ -1278,6 +1280,7 @@ def update_effect_size_slider_marks(dimensions):
     
     return {
         0.1: {'label': '0.1', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
+        0.38: {'label': '0.38', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
         0.5: {'label': '0.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
         1.0: {'label': '1.0', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
         1.5: {'label': '1.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}}
