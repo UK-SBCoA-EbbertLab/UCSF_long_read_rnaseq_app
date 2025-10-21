@@ -147,15 +147,14 @@ def layout():
                                                   id="tab1-effect-label"),
                                         dcc.Slider(
                                             id="effect-size-slider-tab1",
-                                            min=0.1,
-                                            max=1.5,
+                                            min=0.08,
+                                            max=1.48,
                                             step=0.1,
                                             marks={
-                                                0.1: {'label': '0.1', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
+                                                0.08: {'label': '0.08', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
                                                 0.38: {'label': '0.38', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
-                                                0.5: {'label': '0.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
-                                                1.0: {'label': '1.0', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
-                                                1.5: {'label': '1.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}}
+                                                1.08: {'label': '1.0', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
+                                                1.48: {'label': '1.48', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}}
                                             },
                                             value=0.38,
                                             className="mb-1",
@@ -1266,11 +1265,10 @@ def update_effect_size_slider_marks(dimensions):
     if not dimensions:
         # Default mark style
         return {
-            0.1: {'label': '0.1', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
+            0.08: {'label': '0.08', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
             0.38: {'label': '0.38', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
-            0.5: {'label': '0.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
-            1.0: {'label': '1.0', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
-            1.5: {'label': '1.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}}
+            1.08: {'label': '1.0', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}},
+            1.48: {'label': '1.48', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': '18px'}}
         }
     
     # Calculate scaling factors for font sizes
@@ -1279,11 +1277,11 @@ def update_effect_size_slider_marks(dimensions):
     font_size = max(16, int(18 * scaling_factor))
     
     return {
-        0.1: {'label': '0.1', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
+        0.08: {'label': '0.08', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
         0.38: {'label': '0.38', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
         0.5: {'label': '0.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
         1.0: {'label': '1.0', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}},
-        1.5: {'label': '1.5', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}}
+        1.48: {'label': '1.48', 'style': {'color': '#495057', 'font-weight': '500', 'font-size': f'{font_size}px'}}
     }
 
 # Update the effect size slider tooltip to have responsive font size
