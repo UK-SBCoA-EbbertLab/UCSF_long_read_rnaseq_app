@@ -83,7 +83,7 @@ def layout():
                             dbc.Button([
                                 html.Div("Genome-wide Cis Quantitative Trait Loci Results (all comparisons)"),
                                 html.Small("Large files - 7.07GB zipped, 45.8GB unzipped", 
-                                          style={"font-size": "0.75rem", "font-weight": "400", "opacity": "0.8", "margin-top": "0.3rem", "display": "block"})
+                                          style={"font-size": "0.9rem", "font-weight": "400", "opacity": "0.8", "margin-top": "0.3rem", "display": "block"})
                             ],
                                 id="tab5-button-5",
                                 color="primary",
