@@ -28,7 +28,7 @@ def layout():
                                 className="w-100 py-3 mb-3",
                                 style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem"}
                             ),
-                            href="https://zenodo.org/records/17145177/files/metadata.tsv?download=1",
+                            href="https://zenodo.org/records/17583562/files/metadata.tsv?download=1",
                             target="_blank"
                         ),
                     ], className="mb-3"),
@@ -43,7 +43,7 @@ def layout():
                                 className="w-100 py-3 mb-3",
                                 style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem"}
                             ),
-                            href="https://zenodo.org/records/17145177/files/differential_expression_results.zip?download=1",
+                            href="https://zenodo.org/records/17583562/files/differential_expression_results.zip?download=1",
                             target="_blank"
                         ),
                     ], className="mb-3"),
@@ -58,7 +58,7 @@ def layout():
                                 className="w-100 py-3 mb-3",
                                 style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem"}
                             ),
-                            href="https://zenodo.org/records/17145177/files/counts_matrices_and_annotations.zip?download=1",
+                            href="https://zenodo.org/records/17583562/files/counts_matrices_and_annotations.zip?download=1",
                             target="_blank"
                         ),
                     ], className="mb-3"),
@@ -66,14 +66,32 @@ def layout():
                     html.Div([
                         html.A(
                             dbc.Button(
-                                "Genome-wide Quantitative Trait Loci Analysis Results (FDR < 0.05)",
+                                "Genome-wide Cis Quantitative Trait Loci Hits (FDR < 0.05)",
                                 id="tab5-button-4",
                                 color="primary",
                                 outline=True,
                                 className="w-100 py-3 mb-3",
                                 style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem", "white-space": "normal", "text-align": "center"}
                             ),
-                            href="https://zenodo.org/records/17145177/files/QTL_results.zip?download=1",
+                            href="https://zenodo.org/records/17583562/files/genome_wide_qtl_results_filtered_fdr.zip?download=1",
+                            target="_blank"
+                        ),
+                    ], className="mb-3"),
+
+                                        html.Div([
+                    html.A(
+                            dbc.Button([
+                                html.Div("Genome-wide Cis Quantitative Trait Loci Results (all comparisons)"),
+                                html.Small("Large files - 7.07GB zipped, 45.8GB unzipped", 
+                                          style={"font-size": "0.75rem", "font-weight": "400", "opacity": "0.8", "margin-top": "0.3rem", "display": "block"})
+                            ],
+                                id="tab5-button-5",
+                                color="primary",
+                                outline=True,
+                                className="w-100 py-3 mb-3",
+                                style={"border-radius": "4px", "letter-spacing": "0.5px", "font-weight": "600", "font-size": "1.1rem", "white-space": "normal", "text-align": "center"}
+                            ),
+                            href="https://zenodo.org/records/17583562/files/genome_wide_qtl_results.zip?download=1",
                             target="_blank"
                         ),
                     ], className="mb-3"),
@@ -82,7 +100,7 @@ def layout():
                     html.Div([
                         dbc.Button(
                             "Raw Data (FASTQ files, sequencing summary files, BAM files, PLINK files, and more)",
-                            id="tab5-button-5",
+                            id="tab5-button-6",
                             color="primary",
                             outline=True,
                             className="w-100 py-3 mb-3",
@@ -95,7 +113,7 @@ def layout():
                     html.Div([
                         dbc.Button(
                             "Processed Data (Counts Matrices, Annotations, Processed genotype files, QTL results, reference files, and more)",
-                            id="tab5-button-6",
+                            id="tab5-button-7",
                             color="primary",
                             outline=True,
                             className="w-100 py-3 mb-3",
