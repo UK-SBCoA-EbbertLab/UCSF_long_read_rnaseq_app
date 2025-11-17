@@ -592,12 +592,9 @@ def layout():
             dcc.Checklist(
                 id='metadata-checklist-tab2',
                 options=[
-                    {"label": "Braak Stage", "value": "braak_score"},
-                    {"label": "Sex", "value": "sex"},
-                    {"label": "AD Status", "value": "ebbert_ad_status"},
-                    {"label": "APOE Genotype", "value": "apoe"}
+                    {"label": "Condition", "value": "condition"}
                 ],
-                value=['ebbert_ad_status']
+                value=['condition']  # Checked by default for dodging
             ),
             # Add plot-style-option component
             dcc.RadioItems(
@@ -702,18 +699,15 @@ def layout():
                 # Third row - three columns
                 dbc.Row([
                     dbc.Col([
-                        create_section_header("Show data separated by:"),
+                        create_section_header("Dodge Boxplots By:"),
                         create_content_card([
                             html.Div([
                                 create_checklist(
                                     id="metadata-checklist-tab2",
                                     options=[
-                                        {"label": "Braak Stage", "value": "braak_score"},
-                                        {"label": "Sex", "value": "sex"},
-                                        {"label": "AD Status", "value": "ebbert_ad_status"},
-                                        {"label": "APOE Genotype", "value": "apoe"}
+                                        {"label": "Condition", "value": "condition"}
                                     ],
-                                    value=['ebbert_ad_status']
+                                    value=['condition']  # Checked by default for dodging
                                 )
                             ])
                         ])

@@ -499,13 +499,9 @@ def create_indexes(table_name):
         if "gene_id" in columns and "gene_name" not in columns:
             columns_to_index.append("gene_id")
 
-        # Check for sex if sample_id does not exist
-        if "sex" in columns and "sample_id" not in columns:
-            columns_to_index.append("sex")
-        
-        # Check for independent_variable if sample_id does not exist
-        if "independent_variable" in columns and "sample_id" not in columns:
-            columns_to_index.append("independent_variable")
+        # Check for group_comparison if sample_id does not exist
+        if "group_comparison" in columns and "sample_id" not in columns:
+            columns_to_index.append("group_comparison")
         
         # Check for gene_index if gene_id does not exist
         if "gene_id" not in columns and "gene_index" in columns:
@@ -531,18 +527,18 @@ def create_indexes(table_name):
         with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
             conn.execute(text("SET maintenance_work_mem = '2097151kB'"))
         
-        # Create composite indexes for differential analysis tables
-        # These tables are queried by (independent_var, sex) together
+        # Create indexes for differential analysis tables
+        # These tables are queried by group_comparison
         if table_name in ["degs", "dte_unique", "dte_total", "dtu_unique", "dtu_total"]:
-            if "independent_var" in columns and "sex" in columns:
+            if "group_comparison" in columns:
                 try:
-                    composite_index_name = f"idx_{table_name}_independent_var_sex"
+                    index_name = f"idx_{table_name}_group_comparison"
                     with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
-                        print(f"Creating composite index on (independent_var, sex) for table '{table_name}'")
-                        conn.execute(text(f'CREATE INDEX CONCURRENTLY {composite_index_name} ON "{table_name}" ("independent_var", "sex");'))
-                        print(f"Successfully created composite index '{composite_index_name}'")
+                        print(f"Creating index on group_comparison for table '{table_name}'")
+                        conn.execute(text(f'CREATE INDEX CONCURRENTLY {index_name} ON "{table_name}" ("group_comparison");'))
+                        print(f"Successfully created index '{index_name}'")
                 except Exception as e:
-                    print(f"Failed to create composite index on (independent_var, sex): {e}")
+                    print(f"Failed to create index on group_comparison: {e}")
         
         # Add indexes on the identified columns
         if columns_to_index:

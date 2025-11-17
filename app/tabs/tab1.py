@@ -60,54 +60,22 @@ def layout():
                             create_content_card(
                                 # Analysis controls content
                                 [
-                                # Row 1: Independent Variable, Sex, and Matrix Type in three columns
+                                # Row 1: Group Comparison and Matrix Type in two columns
                                 dbc.Row([
-                                    # Left column - Independent Variable dropdown
+                                    # Left column - Group Comparison dropdown
                                     dbc.Col([
-                                        html.Label("Independent Variable:", className="mb-1 tab1-form-label", 
+                                        html.Label("Group Comparison:", className="mb-1 tab1-form-label", 
                                                   id="tab1-comparison-label"),
                                         dcc.Dropdown(
                                             id="independent-var-dropdown-tab1",
-                                            options=[
-                                                {"label": "Age at Death", "value": "age_at_death"},
-                                                {"label": "Braak Stage Tangles", "value": "braak_stage_tangles"},
-                                                {"label": "Dementia Duration", "value": "dementia_duration"},
-                                                {"label": "Dementia Onset Age", "value": "dementia_onset_age"},
-                                                {"label": "APOE ε2 Dosage", "value": "e2_dosage"},
-                                                {"label": "APOE ε3 Dosage", "value": "e3_dosage"},
-                                                {"label": "APOE ε4 Dosage", "value": "e4_dosage"},
-                                                {"label": "Frontal Lobe Plaques", "value": "frontal_lobe_plaques"},
-                                                {"label": "Frontal Lobe Tangles", "value": "frontal_lobe_tangles"},
-                                                {"label": "LOAD Status", "value": "load_status"},
-                                                {"label": "Total Plaques", "value": "total_plaques"},
-                                                {"label": "Total Tangles", "value": "total_tangles"}
-                                            ],
-                                            value="load_status",
+                                            options=[],  # Will be populated by callback
+                                            value=None,  # Will be set by callback
                                             clearable=False,
                                             className="mb-2 taller-dropdown",
                                             optionHeight=60,
                                             maxHeight=400
                                         )
-                                    ], width=4),
-                                    
-                                    # Middle column - Sex dropdown
-                                    dbc.Col([
-                                        html.Label("Select Sex:", className="mb-1 tab1-form-label", 
-                                                  id="tab1-sex-label"),
-                                        dcc.Dropdown(
-                                            id="sex-dropdown-tab1",
-                                            options=[
-                                                {"label": "All", "value": "all"},
-                                                {"label": "Male", "value": "male"},
-                                                {"label": "Female", "value": "female"}
-                                            ],
-                                            value="all",
-                                            clearable=False,
-                                            className="mb-2 taller-dropdown",
-                                            optionHeight=60,
-                                            maxHeight=400
-                                        )
-                                    ], width=4),
+                                    ], width=6),
                                     
                                     # Right column - Matrix Type dropdown
                                     dbc.Col([
@@ -125,7 +93,7 @@ def layout():
                                             optionHeight=60,
                                             maxHeight=400
                                         )
-                                    ], width=4)
+                                    ], width=6)
                                 ], className="mb-5"),
                                 
                                 # Spacer div with context information
@@ -304,6 +272,29 @@ def layout():
         "padding": "10px"    # Add some padding
     })
 
+# Callback to populate group comparison dropdown
+@callback(
+    [Output("independent-var-dropdown-tab1", "options"),
+     Output("independent-var-dropdown-tab1", "value")],
+    [Input("tab1-container", "id")]  # Trigger on page load
+)
+def populate_group_comparison_dropdown(_):
+    """Get unique group_comparison values from degs table"""
+    try:
+        query = """
+            SELECT DISTINCT group_comparison
+            FROM degs
+            ORDER BY group_comparison
+        """
+        result = duck_conn.execute(query).fetchall()
+        options = [{"label": row[0], "value": row[0]} for row in result]
+        # Set first option as default value
+        default_value = options[0]["value"] if options else None
+        return options, default_value
+    except Exception as e:
+        print(f"Error loading group comparisons: {e}")
+        return [], None
+
 # Callback for responsive design
 @callback(
     [Output("tab1-container", "style"),
@@ -317,7 +308,6 @@ def layout():
      Output("pvalue-slider-output-tab1", "style"),
      Output("effect-size-slider-output-tab1", "style"),
      Output("independent-var-dropdown-tab1", "className"),
-     Output("sex-dropdown-tab1", "className"),
      Output("matrix-type-dropdown-tab1", "className"),
      Output("search-input-tab1", "className"),
      # Add output for all label styles
@@ -333,7 +323,6 @@ def update_tab1_responsiveness(dimensions):
             "mb-4", 6, 6,
             {"font-size": "16px"},
             {"font-size": "16px"},
-            "mb-3",
             "mb-3",
             "mb-3",
             "mb-3",
@@ -396,7 +385,6 @@ def update_tab1_responsiveness(dimensions):
         row2_class, quadrant3_width, quadrant4_width,
         slider_font_size,
         slider_font_size,
-        dropdown_class,
         dropdown_class,
         dropdown_class,
         dropdown_class,
@@ -497,45 +485,46 @@ def get_table_columns(table_name):
      Output('dte-data-store-tab1', 'data'),
      Output('dtu-data-store-tab1', 'data')],
     [Input('independent-var-dropdown-tab1', 'value'),
-     Input('sex-dropdown-tab1', 'value'),
      Input('matrix-type-dropdown-tab1', 'value')]
 )
-def load_table_data(independent_var, sex, count_type):
+def load_table_data(group_comparison, count_type):
     
     # Default values if inputs are None
-    independent_var = independent_var if independent_var else "load_status"
-    sex = sex if sex else "all"
+    if not group_comparison or not count_type:
+        return None, None, None
+    
     count_type = count_type if count_type else "unique"
     
     # Get the appropriate table names
     dge_table, dte_table, dtu_table = get_table_names(count_type)
     
     try:       
-        # Get DEG data filtered by independent_var and sex
+        # Get DEG data filtered by group_comparison
         dge_query = f"""
             SELECT *
             FROM "{dge_table}"
-            WHERE independent_var = '{independent_var}' AND sex = '{sex}'
+            WHERE group_comparison = '{group_comparison}'
         """
   
-        # Get DTE data filtered by independent_var and sex
+        # Get DTE data filtered by group_comparison
         dte_query = f"""
             SELECT *
             FROM "{dte_table}"
-            WHERE independent_var = '{independent_var}' AND sex = '{sex}'
+            WHERE group_comparison = '{group_comparison}'
         """
         
-        # Get DTU data filtered by independent_var and sex
+        # Get DTU data filtered by group_comparison
         dtu_query = f"""
             SELECT *
             FROM "{dtu_table}"
-            WHERE independent_var = '{independent_var}' AND sex = '{sex}'
+            WHERE group_comparison = '{group_comparison}'
         """
 
         return dge_query, dte_query, dtu_query
         
     except Exception as e:
         # Return empty data on error
+        print(f"Error loading data: {e}")
         return None, None, None
 
 # Add callbacks for displaying the current slider values
@@ -573,49 +562,25 @@ def update_effect_size_output(value):
      Input('effect-size-slider-tab1', 'value'),
      Input('matrix-type-dropdown-tab1', 'value'),
      Input('independent-var-dropdown-tab1', 'value'),
-     Input('sex-dropdown-tab1', 'value'),
      Input('window-dimensions', 'data')]
 )
-def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx, effect_size, count_type, independent_var, sex, window_dimensions):
+def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx, effect_size, count_type, group_comparison, window_dimensions):
     # Convert p-value index to actual p-value
     p_values = {0: 0.001, 1: 0.01, 2: 0.05, 3: 0.1, 4: 0.2, 5: 0.3}
     pvalue_threshold = p_values[pvalue_idx]
     
-    # Map independent variable values to display text
-    independent_var_map = {
-        "age_at_death": "Age at Death",
-        "braak_stage_tangles": "Braak Stage Tangles",
-        "dementia_duration": "Dementia Duration",
-        "dementia_onset_age": "Dementia Onset Age",
-        "e2_dosage": "APOE ε2 Dosage",
-        "e3_dosage": "APOE ε3 Dosage",
-        "e4_dosage": "APOE ε4 Dosage",
-        "frontal_lobe_plaques": "Frontal Lobe Plaques",
-        "frontal_lobe_tangles": "Frontal Lobe Tangles",
-        "load_status": "LOAD Status",
-        "total_plaques": "Total Plaques",
-        "total_tangles": "Total Tangles"
-    }
-    independent_var_text = independent_var_map.get(independent_var, independent_var)
-    
-    # Map sex values to display text
-    sex_map = {
-        "all": "Both Sexes",
-        "male": "Males Only",
-        "female": "Females Only"
-    }
-    sex_text = sex_map.get(sex, sex)
-    
-    # Create comparison text for plot titles
-    comparison_text = f"({independent_var_text}, {sex_text})"
-    
-    # Create interpretation text for the last line of the title
-    if independent_var == "load_status":
-        interpretation_text = "Positive log2 fold change indicates upregulation in LOAD samples"
-        interpretation_text_dtu = "Positive effect size indicates increased transcript usage in LOAD samples"
+    # Parse group_comparison to extract the numerator group (before " vs. ")
+    # Format is "Group1 vs. Group2" where positive values mean upregulation in Group1
+    if group_comparison and " vs. " in group_comparison:
+        numerator_group = group_comparison.split(" vs. ")[0]
+        comparison_text = f"({group_comparison})"
+        interpretation_text = f"Positive log2 fold change indicates upregulation in {numerator_group}"
+        interpretation_text_dtu = f"Positive effect size indicates increased transcript usage in {numerator_group}"
     else:
-        interpretation_text = f"Positive log2 fold change indicates positive correlation with {independent_var_text}"
-        interpretation_text_dtu = f"Positive effect size indicates positive correlation with {independent_var_text}"
+        # Fallback if group_comparison is not in expected format
+        comparison_text = f"({group_comparison})" if group_comparison else ""
+        interpretation_text = "Positive log2 fold change indicates upregulation in the first group"
+        interpretation_text_dtu = "Positive effect size indicates increased transcript usage in the first group"
     
     # Default window dimensions if not available yet
     if not window_dimensions:
@@ -1321,10 +1286,9 @@ def update_plots(dge_query, dte_query, dtu_query, selected_gene_name, pvalue_idx
      State('dte-graph', 'figure'),
      State('dtu-graph', 'figure'),
      State('independent-var-dropdown-tab1', 'value'),
-     State('sex-dropdown-tab1', 'value'),
      State('matrix-type-dropdown-tab1', 'value')]
 )
-def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, independent_var, sex, count_type):
+def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, group_comparison, count_type):
     from dash import dcc, no_update
     import tempfile
     import zipfile
@@ -1344,27 +1308,9 @@ def download_plots_as_svg_tab1(n_clicks, dge_fig, dte_fig, dtu_fig, independent_
     count_type = count_type if count_type else 'unique'
     
     try:
-        # Prepare filename base on independent variable and sex
-        independent_var_map = {
-            "age_at_death": "Age_at_Death",
-            "braak_stage_tangles": "Braak_Stage_Tangles",
-            "dementia_duration": "Dementia_Duration",
-            "dementia_onset_age": "Dementia_Onset_Age",
-            "e2_dosage": "APOE_e2_Dosage",
-            "e3_dosage": "APOE_e3_Dosage",
-            "e4_dosage": "APOE_e4_Dosage",
-            "frontal_lobe_plaques": "Frontal_Lobe_Plaques",
-            "frontal_lobe_tangles": "Frontal_Lobe_Tangles",
-            "load_status": "LOAD_Status",
-            "total_plaques": "Total_Plaques",
-            "total_tangles": "Total_Tangles"
-        }
-        sex_map = {
-            "all": "Both_Sexes",
-            "male": "Males",
-            "female": "Females"
-        }
-        comparison_text = f"{independent_var_map.get(independent_var, independent_var)}_{sex_map.get(sex, sex)}"
+        # Prepare filename based on group comparison
+        # Replace spaces and special characters for filename
+        comparison_text = group_comparison.replace(" ", "_").replace(".", "_") if group_comparison else "comparison"
         
         # Create a temporary directory for our files
         temp_dir = tempfile.mkdtemp()
@@ -1590,7 +1536,6 @@ def update_effect_size_tooltip(dimensions):
 # Update all form labels with the same style
 @app.callback(
     [Output("tab1-comparison-label", "style"),
-     Output("tab1-sex-label", "style"),
      Output("tab1-matrix-label", "style"),
      Output("tab1-pvalue-label", "style"),
      Output("tab1-effect-label", "style"),
@@ -1602,14 +1547,14 @@ def update_form_labels(form_style):
     if not form_style or form_style.get("display") == "none":
         # Default style - font-weight and color are set in className 
         default_style = {"font-weight": "600", "color": "#495057", "font-size": "18px", "margin-bottom": "2px"}
-        return default_style, default_style, default_style, default_style, default_style, default_style, default_style
+        return default_style, default_style, default_style, default_style, default_style, default_style
     
     # Add margin-bottom to make more compact
     compact_style = dict(form_style)
     compact_style["margin-bottom"] = "2px"
     
     # Return the same style for all labels
-    return compact_style, compact_style, compact_style, compact_style, compact_style, compact_style, compact_style
+    return compact_style, compact_style, compact_style, compact_style, compact_style, compact_style
 
 # Add a callback to adjust the height of the Analysis Controls content card
 @app.callback(
