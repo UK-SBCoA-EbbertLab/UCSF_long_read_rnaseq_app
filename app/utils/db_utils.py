@@ -37,7 +37,7 @@ else:
     # Local database fallback
     PG_HOST = 'localhost'
     PG_PORT = '5432'
-    PG_DB = 'ad_dash_app'
+    PG_DB = 'ucsf_rnaseq_app'
     PG_USER = 'postgres'
     PG_PASSWORD = 'isoforms'
     pg_engine = create_engine(f'postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}')
