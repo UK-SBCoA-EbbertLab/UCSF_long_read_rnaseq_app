@@ -99,7 +99,7 @@ def layout():
                         style={"font-weight": "300", "letter-spacing": "0.5px"}),
                 html.Div([
                     html.Iframe(
-                        src="https://www.youtube.com/watch?v=YEfTy6I192E",
+                        src="https://www.youtube.com/embed/YEfTy6I192E",
                         width="100%",
                         height="400",
                         style={
