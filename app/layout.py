@@ -53,16 +53,6 @@ layout = dbc.Container([
                 "display": "inline-block",
                 "font-size": "calc(1.5rem + 1vw)"  # Responsive font size
             }
-        ),
-        html.Div("Please cite us: XXXX", 
-            className="mb-4",
-            style={
-                "font-size": "1.5rem",
-                "font-style": "italic",
-                "color": COLORS['text-secondary'],
-                "margin-top": "-8px",
-                "letter-spacing": "0.5px"
-            }
         )
     ], className="d-inline-block"),
     
