@@ -352,15 +352,16 @@ p[style*="font-size: 1.1rem"] {
 
 /* Replace the default "No options available" message with "Searching..." */
 /* This shows during search operations before callback results arrive */
-.Select-noresults,
-.Select--multi .Select-noresults,
-.Select--single .Select-noresults {
+/* ONLY for the RSID search bar in Tab 4 */
+#rsid-search-input .Select-noresults,
+#rsid-search-input.Select--multi .Select-noresults,
+#rsid-search-input.Select--single .Select-noresults {
     font-size: 0 !important; /* Hide the original text */
 }
 
-.Select-noresults::before,
-.Select--multi .Select-noresults::before,
-.Select--single .Select-noresults::before {
+#rsid-search-input .Select-noresults::before,
+#rsid-search-input.Select--multi .Select-noresults::before,
+#rsid-search-input.Select--single .Select-noresults::before {
     content: "🔍 Searching..." !important;
     font-size: 14px !important; /* Restore font size for our custom text */
     font-weight: 500 !important;
