@@ -250,22 +250,26 @@ def layout():
                     # Quadrant 2 (Top Right)
                     dbc.Col([
                         create_content_card([
-                            html.Div([
-                                html.Div(
-                                    html.P("Please select analysis parameters to display results",
-                                          style={"color": "#666666", "margin": 0}),
-                                    style={
-                                        "height": "100%",
-                                        "width": "100%",
-                                        "display": "flex",
-                                        "justify-content": "center",
-                                        "align-items": "center",
-                                        "min-height": "600px",  # Increased from 300px
-                                        "background-color": "#f8f9fa",
-                                        "border-radius": "6px"
-                                    }
-                                )
-                            ], id="differential-gene-expression-plot")
+                            dcc.Loading(
+                                id="loading-dge",
+                                type="default",
+                                children=html.Div([
+                                    html.Div(
+                                        html.P("Please select analysis parameters to display results",
+                                              style={"color": "#666666", "margin": 0}),
+                                        style={
+                                            "height": "100%",
+                                            "width": "100%",
+                                            "display": "flex",
+                                            "justify-content": "center",
+                                            "align-items": "center",
+                                            "min-height": "600px",  # Increased from 300px
+                                            "background-color": "#f8f9fa",
+                                            "border-radius": "6px"
+                                        }
+                                    )
+                                ], id="differential-gene-expression-plot")
+                            )
                         ])
                     ], width=6, id="tab1-quadrant2-col")
                 ], className="mb-4", id="tab1-row1"),
@@ -275,44 +279,52 @@ def layout():
                     # Quadrant 3 (Bottom Left)
                     dbc.Col([
                         create_content_card([
-                            html.Div([
-                                html.Div(
-                                    html.P("Please select analysis parameters to display results",
-                                          style={"color": "#666666", "margin": 0}),
-                                    style={
-                                        "height": "100%",
-                                        "width": "100%",
-                                        "display": "flex",
-                                        "justify-content": "center",
-                                        "align-items": "center",
-                                        "min-height": "600px",  # Increased from 300px
-                                        "background-color": "#f8f9fa",
-                                        "border-radius": "6px"
-                                    }
-                                )
-                            ], id="differential-transcript-expression-plot")
+                            dcc.Loading(
+                                id="loading-dte",
+                                type="default",
+                                children=html.Div([
+                                    html.Div(
+                                        html.P("Please select analysis parameters to display results",
+                                              style={"color": "#666666", "margin": 0}),
+                                        style={
+                                            "height": "100%",
+                                            "width": "100%",
+                                            "display": "flex",
+                                            "justify-content": "center",
+                                            "align-items": "center",
+                                            "min-height": "600px",  # Increased from 300px
+                                            "background-color": "#f8f9fa",
+                                            "border-radius": "6px"
+                                        }
+                                    )
+                                ], id="differential-transcript-expression-plot")
+                            )
                         ])
                     ], width=6, id="tab1-quadrant3-col"),
                     
                     # Quadrant 4 (Bottom Right)
                     dbc.Col([
                         create_content_card([
-                            html.Div([
-                                html.Div(
-                                    html.P("Please select analysis parameters to display results",
-                                          style={"color": "#666666", "margin": 0}),
-                                    style={
-                                        "height": "100%",
-                                        "width": "100%",
-                                        "display": "flex",
-                                        "justify-content": "center",
-                                        "align-items": "center",
-                                        "min-height": "600px",  # Increased from 300px
-                                        "background-color": "#f8f9fa",
-                                        "border-radius": "6px"
-                                    }
-                                )
-                            ], id="differential-transcript-usage-plot")
+                            dcc.Loading(
+                                id="loading-dtu",
+                                type="default",
+                                children=html.Div([
+                                    html.Div(
+                                        html.P("Please select analysis parameters to display results",
+                                              style={"color": "#666666", "margin": 0}),
+                                        style={
+                                            "height": "100%",
+                                            "width": "100%",
+                                            "display": "flex",
+                                            "justify-content": "center",
+                                            "align-items": "center",
+                                            "min-height": "600px",  # Increased from 300px
+                                            "background-color": "#f8f9fa",
+                                            "border-radius": "6px"
+                                        }
+                                    )
+                                ], id="differential-transcript-usage-plot")
+                            )
                         ])
                     ], width=6, id="tab1-quadrant4-col")
                 ], className="mb-4", id="tab1-row2")
@@ -542,22 +554,25 @@ def load_table_data(independent_var, sex, count_type):
     
     try:       
         # Get DEG data filtered by independent_var and sex
+        # Only select columns needed for the volcano plot
         dge_query = f"""
-            SELECT *
+            SELECT gene_name, effectSize, PValue, padj
             FROM "{dge_table}"
             WHERE independent_var = '{independent_var}' AND sex = '{sex}'
         """
   
         # Get DTE data filtered by independent_var and sex
+        # Include transcript_id for transcript-level plots
         dte_query = f"""
-            SELECT *
+            SELECT gene_name, transcript_id, effectSize, PValue, padj
             FROM "{dte_table}"
             WHERE independent_var = '{independent_var}' AND sex = '{sex}'
         """
         
         # Get DTU data filtered by independent_var and sex
+        # Include transcript_id for transcript-level plots
         dtu_query = f"""
-            SELECT *
+            SELECT gene_name, transcript_id, effectSize, PValue, padj
             FROM "{dtu_table}"
             WHERE independent_var = '{independent_var}' AND sex = '{sex}'
         """
