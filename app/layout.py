@@ -5,7 +5,7 @@
 
 from dash import html, dcc
 import dash_bootstrap_components as dbc
-from app.tabs import tab0, tab1, tab2, tab3, tab4, tab5
+from app.tabs import tab0, tab1, tab2
 
 # Define some custom colors that complement COSMO theme
 COLORS = {
@@ -74,9 +74,6 @@ layout = dbc.Container([
             dbc.Tab(label="Home", tab_id="tab-0", active_tab_style={"borderBottom": f"3px solid {COLORS['accent']}"}),
             dbc.Tab(label="Differential Expression", tab_id="tab-1", active_tab_style={"borderBottom": f"3px solid {COLORS['accent']}"}),
             dbc.Tab(label="Isoform Explorer", tab_id="tab-2", active_tab_style={"borderBottom": f"3px solid {COLORS['accent']}"}),
-            dbc.Tab(label="Isoform Correlations", tab_id="tab-3", active_tab_style={"borderBottom": f"3px solid {COLORS['accent']}"}),
-            dbc.Tab(label="QTL Explorer", tab_id="tab-4", active_tab_style={"borderBottom": f"3px solid {COLORS['accent']}"}),
-            dbc.Tab(label="Download Data", tab_id="tab-5", active_tab_style={"borderBottom": f"3px solid {COLORS['accent']}"}),
         ],
         className="mb-4 nav-tabs-clean dbc",
         style={
@@ -121,8 +118,5 @@ style={
 content_layout = {
     "tab-0": tab0.layout(),  # New Home tab
     "tab-1": tab1.layout(),
-    "tab-2": tab2.layout(),
-    "tab-3": tab3.layout(),
-    "tab-4": tab4.layout(),
-    "tab-5": tab5.layout()
+    "tab-2": tab2.layout()
 }

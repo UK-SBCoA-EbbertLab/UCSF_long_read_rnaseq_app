@@ -26,7 +26,7 @@ if DATABASE_URL:
     print("Using Heroku PostgreSQL database for migrations")
 else:
     # Local database fallback
-    db_url = "postgresql+psycopg2://postgres:isoforms@localhost:5432/ad_dash_app"
+    db_url = "postgresql+psycopg2://postgres:isoforms@localhost:5432/ucsf_rnaseq_app"
     print("Using local PostgreSQL database for migrations")
 
 engine = create_engine(

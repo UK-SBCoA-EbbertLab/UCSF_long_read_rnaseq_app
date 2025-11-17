@@ -12,9 +12,9 @@ This repository hosts a Python Dash web application designed to visualize, downl
     │   ├── layout.py           # Defines the overall layout (header, footer, etc.) of the app.
     │   ├── callbacks.py        # Contains global callback functions for app interactivity.
     │   └── tabs/               # Contains individual modules for each tab in the app.
-    │       ├── tab1.py         # Tab 1:
-    │       ├── tab2.py         # Tab 2: 
-    │       ├── tab3.py         # Tab 3: 
+    │       ├── tab0.py         # Tab 0: Home
+    │       ├── tab1.py         # Tab 1: Differential Expression
+    │       ├── tab2.py         # Tab 2: Isoform Explorer
     │       └── ...             # Additional tabs as needed.
     ├── assets/                 # Static assets that Dash automatically serves.
     │   ├── custom.css          # Custom CSS for styling the app.
@@ -40,9 +40,9 @@ This repository hosts a Python Dash web application designed to visualize, downl
   - **`layout.py`**: Defines the app’s overall layout, including common elements like headers and footers.
   - **`callbacks.py`**: Houses the callback functions that control app interactivity.
   - **tabs/**: Splits the app into modular sections (tabs) for different data views:
-    - **`tab1.py`**: 
-    - **`tab2.py`**: 
-    - **`tab3.py`**: 
+    - **`tab0.py`**: Home tab
+    - **`tab1.py`**: Differential Expression
+    - **`tab2.py`**: Isoform Explorer
     - Additional tabs can be added as required.
 
 - **assets/**  
