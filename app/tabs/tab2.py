@@ -67,14 +67,18 @@ density_fig.update_layout(
     )
 )
 
-# Store the last valid search options to prevent them from disappearing
-last_valid_options = []
-last_search_value = None  # Store the last search value
-
 # Default APP gene information
 DEFAULT_APP_GENE_INDEX = 9758
 DEFAULT_APP_GENE_NAME = "APP"
 DEFAULT_APP_GENE_ID = "ENSG00000142192"
+
+# Store the last valid search options to prevent them from disappearing
+# Initialize with default APP gene
+last_valid_options = [{
+    'label': f"{DEFAULT_APP_GENE_NAME} ({DEFAULT_APP_GENE_ID})",
+    'value': DEFAULT_APP_GENE_INDEX
+}]
+last_search_value = None  # Store the last search value
 
 @app.callback(
     Output('density-plot-tab2', 'figure'),
