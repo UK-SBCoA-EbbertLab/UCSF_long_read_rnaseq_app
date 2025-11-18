@@ -339,7 +339,9 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, log_transf
                     boxpoints='all', jitter=0.3, pointpos=0, orientation='h',
                     marker=dict(color='black', size=4),
                     line=dict(color='black', width=1),
-                    fillcolor=color_map[group], opacity=1, boxmean=True
+                    fillcolor=color_map[group], opacity=1, boxmean=True,
+                    customdata=group_data[['sample_id']] if 'sample_id' in group_data.columns else None,
+                    hovertemplate='%{x}, %{customdata[0]}'
                 ))
             else: # violin plot
                 fig.add_trace(go.Violin(
@@ -349,7 +351,9 @@ def update_gene_level_plot(selected_gene, options, selected_metadata, log_transf
                     marker=dict(color='black', size=4),
                     line=dict(color='black', width=1),
                     fillcolor=color_map[group], opacity=1,
-                    box_visible=False, spanmode='hard'
+                    box_visible=False, spanmode='hard',
+                    customdata=group_data[['sample_id']] if 'sample_id' in group_data.columns else None,
+                    hovertemplate='%{x}, %{customdata[0]}'
                 ))
 
         # Get proper display name for the count type
