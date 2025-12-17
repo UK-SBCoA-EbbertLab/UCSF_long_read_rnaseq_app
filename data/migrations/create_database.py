@@ -318,7 +318,7 @@ def process_file(file_path):
         start_time = time.time()
         
         # Create table name from file name without extension
-        table_name = file_path.stem.lower()
+        table_name = file_path.stem.lower().replace("-", "_")
         
         # For transcript_annotation.tsv, we need to handle the seqnames column differently
         if "transcript_annotation" in table_name:
