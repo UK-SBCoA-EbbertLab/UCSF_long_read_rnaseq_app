@@ -321,7 +321,7 @@ def process_file(file_path):
         table_name = file_path.stem.lower()
         
         # For transcript_annotation.tsv, we need to handle the seqnames column differently
-        if table_name == "transcript_annotation":
+        if "transcript_annotation" in table_name:
             ## Define dtypes for the table
             dtypes = {'gene_id': str, 'gene_name': str, 'transcript_id': str, 'transcript_name': str, 
                      'transcript_biotype': str, 'seqnames': str, 'strand': str, 'type': str, 
@@ -393,12 +393,12 @@ def process_file(file_path):
             print(f"Optimized column types for {table_name}: {optimized_types}")
             
             # Hard-code the average_coverage column on the coverage table as INTEGER
-            if table_name == "coverage_table" and "average_coverage" in optimized_types:
+            if "coverage_table" in table_name and "average_coverage" in optimized_types:
                 optimized_types["average_coverage"] = "INTEGER"
                 print("Forcing average_coverage column to INTEGER as requested")
 
             # === Add specific handling for genotyping table ===
-            if table_name == "genotyping":
+            if "genotyping" in table_name:
                 print(f"Applying specific type overrides for genotyping table...")
                 new_optimized_types = {}
                 for column, dtype in optimized_types.items():
@@ -419,7 +419,7 @@ def process_file(file_path):
             # and the generic logic below might conflict or be redundant.
             # For other tables, rsid_index will still be handled below if present.
             force_integer_cols = ["gene_index", "transcript_index", "start", "end", "pos"]
-            if table_name != "genotyping" and "rsid_index" in optimized_types:
+            if "genotyping" not in table_name and "rsid_index" in optimized_types:
                  force_integer_cols.append("rsid_index") # Add it back for non-genotyping tables
 
             for col in force_integer_cols:
@@ -529,7 +529,7 @@ def create_indexes(table_name):
         
         # Create indexes for differential analysis tables
         # These tables are queried by group_comparison
-        if table_name in ["degs", "dte_unique", "dte_total", "dtu_unique", "dtu_total"]:
+        if "degs" in table_name or "dte_unique" in table_name or "dte_total" in table_name or "dtu_unique" in table_name or "dtu_total" in table_name:
             if "group_comparison" in columns:
                 try:
                     index_name = f"idx_{table_name}_group_comparison"
